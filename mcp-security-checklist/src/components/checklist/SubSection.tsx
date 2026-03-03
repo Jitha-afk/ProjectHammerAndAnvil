@@ -1,0 +1,50 @@
+import { ProgressBar } from '@/components/progress/ProgressBar'
+import { computeProgress } from '@/lib/progress'
+import type { ItemState, SubSection as SubSectionType } from '@/types'
+
+import { ChecklistItem } from './ChecklistItem'
+
+interface SubSectionProps {
+  subSection: SubSectionType
+  itemStates: Record<string, ItemState>
+}
+
+const priorityRank = {
+  CRITICAL: 0,
+  HIGH: 1,
+  RECOMMENDED: 2,
+} as const
+
+export function SubSection({ subSection, itemStates }: SubSectionProps) {
+  const sortedItems = [...subSection.items].sort(
+    (left, right) => priorityRank[left.priority] - priorityRank[right.priority],
+  )
+
+  const progress = computeProgress(sortedItems, itemStates)
+
+  return (
+    <section className="space-y-3" id={`subsection-${subSection.id}`}>
+      <header className="rounded-md border border-border bg-muted/30 p-3">
+        <div className="flex items-center justify-between gap-3">
+          <h4 className="text-sm font-semibold text-foreground">
+            {subSection.number} {subSection.title}
+          </h4>
+          <p className="text-xs text-muted-foreground">{sortedItems.length} items</p>
+        </div>
+        <div className="mt-2">
+          <ProgressBar label={`${subSection.title} subsection progress`} size="thin" value={progress} />
+        </div>
+      </header>
+
+      <div className="space-y-2">
+        {sortedItems.map((item, index) => (
+          <ChecklistItem
+            item={item}
+            key={item.id}
+            shouldPulse={subSection.number === '1.1' && index === 0}
+          />
+        ))}
+      </div>
+    </section>
+  )
+}

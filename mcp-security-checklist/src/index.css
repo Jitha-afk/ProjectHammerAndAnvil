@@ -1,24 +1,181 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Self-hosted Fonts ──────────────────────────────────── */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/mcp-security-checklist/fonts/DMSans-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/mcp-security-checklist/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Theme: Light Mode ──────────────────────────────────── */
 :root {
-  --background: oklch(0.99 0.01 250);
-  --foreground: oklch(0.18 0.02 250);
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --background: oklch(0.985 0.002 240);
+  --background-secondary: oklch(0.97 0.004 240);
+  --background-tertiary: oklch(0.955 0.006 240);
+  --foreground: oklch(0.15 0.02 250);
+  --foreground-secondary: oklch(0.35 0.02 250);
+  --foreground-muted: oklch(0.55 0.015 250);
+
+  --border: oklch(0.90 0.005 250);
+  --border-hover: oklch(0.82 0.01 250);
+  --ring: oklch(0.55 0.12 195);
+
+  /* Accent: Deep Teal — trustworthy, security-appropriate */
+  --accent: oklch(0.55 0.12 195);
+  --accent-hover: oklch(0.48 0.13 195);
+  --accent-light: oklch(0.94 0.03 195);
+  --accent-foreground: oklch(0.98 0.005 195);
+
+  /* Priority Colors */
+  --critical: oklch(0.55 0.22 25);
+  --critical-light: oklch(0.96 0.02 25);
+  --critical-foreground: oklch(0.45 0.2 25);
+
+  --high: oklch(0.65 0.18 70);
+  --high-light: oklch(0.96 0.03 70);
+  --high-foreground: oklch(0.50 0.16 70);
+
+  --recommended: oklch(0.60 0.16 155);
+  --recommended-light: oklch(0.96 0.03 155);
+  --recommended-foreground: oklch(0.45 0.15 155);
+
+  /* Progress */
+  --progress-low: oklch(0.55 0.22 25);
+  --progress-mid: oklch(0.65 0.18 70);
+  --progress-high: oklch(0.60 0.16 155);
+  --progress-track: oklch(0.92 0.005 250);
+
+  /* Surfaces */
+  --card: oklch(0.99 0.002 240);
+  --card-hover: oklch(0.975 0.004 240);
+  --sidebar: oklch(0.975 0.004 240);
+  --sidebar-border: oklch(0.91 0.005 250);
+
+  /* Milestone badges */
+  --milestone-baseline: oklch(0.55 0.12 195);
+  --milestone-hardened: oklch(0.60 0.16 280);
+  --milestone-comprehensive: oklch(0.60 0.16 155);
 }
 
+/* ── Theme: Dark Mode ───────────────────────────────────── */
 .dark {
-  --background: oklch(0.18 0.02 250);
-  --foreground: oklch(0.97 0.01 250);
+  --background: oklch(0.14 0.01 250);
+  --background-secondary: oklch(0.17 0.012 250);
+  --background-tertiary: oklch(0.20 0.014 250);
+  --foreground: oklch(0.93 0.008 250);
+  --foreground-secondary: oklch(0.70 0.01 250);
+  --foreground-muted: oklch(0.50 0.01 250);
+
+  --border: oklch(0.28 0.01 250);
+  --border-hover: oklch(0.35 0.012 250);
+  --ring: oklch(0.60 0.12 195);
+
+  --accent: oklch(0.65 0.12 195);
+  --accent-hover: oklch(0.70 0.13 195);
+  --accent-light: oklch(0.22 0.04 195);
+  --accent-foreground: oklch(0.12 0.02 195);
+
+  --critical: oklch(0.65 0.20 25);
+  --critical-light: oklch(0.22 0.06 25);
+  --critical-foreground: oklch(0.75 0.18 25);
+
+  --high: oklch(0.72 0.16 70);
+  --high-light: oklch(0.22 0.05 70);
+  --high-foreground: oklch(0.78 0.14 70);
+
+  --recommended: oklch(0.68 0.14 155);
+  --recommended-light: oklch(0.22 0.04 155);
+  --recommended-foreground: oklch(0.75 0.12 155);
+
+  --progress-low: oklch(0.65 0.20 25);
+  --progress-mid: oklch(0.72 0.16 70);
+  --progress-high: oklch(0.68 0.14 155);
+  --progress-track: oklch(0.24 0.01 250);
+
+  --card: oklch(0.17 0.012 250);
+  --card-hover: oklch(0.20 0.014 250);
+  --sidebar: oklch(0.16 0.01 250);
+  --sidebar-border: oklch(0.25 0.01 250);
+
+  --milestone-baseline: oklch(0.65 0.12 195);
+  --milestone-hardened: oklch(0.68 0.14 280);
+  --milestone-comprehensive: oklch(0.68 0.14 155);
 }
 
+/* ── Base Styles ────────────────────────────────────────── */
 @layer base {
+  * {
+    border-color: var(--border);
+  }
+
   body {
+    font-family: var(--font-sans);
     background-color: var(--background);
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
   }
+
+  code, pre, kbd {
+    font-family: var(--font-mono);
+  }
+
+  /* Focus rings for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--accent-light);
+    color: var(--foreground);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
+  }
+}
+
+/* ── Utility layer ──────────────────────────────────────── */
+@utility text-balance {
+  text-wrap: balance;
 }
