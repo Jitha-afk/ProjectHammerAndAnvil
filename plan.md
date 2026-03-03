@@ -20,6 +20,7 @@
 | **Milestone toast queue** | Per updated PRD: on simultaneous milestones (e.g., bulk import), show only the highest-tier toast. comprehensive > hardened > baseline. |
 | **Reactive milestone detection** | Per updated PRD Section 8: Use a Zustand selector + `useEffect` to detect milestone changes instead of `setTimeout` inside `toggleItem`. |
 | **Section 8 is reference-only** | Per PRD 14d: no checkboxes, no progress bar, excluded from all progress/milestone calculations. Displayed as read-only appendix. |
+| **User-scoped progress model** | Global progress must be computed only from user-selected sections (choose-your-own-adventure), not all 228 controls. Selection is made on a Home page before entering the checklist. |
 | **Mobile breakpoint `<768px`** | Per PRD 11b: sidebar becomes hamburger drawer, toolbar stacks vertically, touch targets 44×44px minimum. |
 | **Skip PRD formatting fix** | PRD has broken markdown from Section 3 onward; leaving as-is per user decision. |
 
@@ -30,11 +31,38 @@
 **What exists:**
 - `docs/checklist.md` — Complete content (228 items, 8 sections)
 - `prd.md` — Full product spec (1,288 lines)
-- `mcp-security-checklist/hammer&anvil/` — Untouched Vite + React 19 + TS scaffold (zero project code)
+- `mcp-security-checklist/` — Active Vite + React 19 + TS app (flattened; no `hammer&anvil` nesting)
+- Core MVP foundation implemented: typed data model, checklist JSON + changelog, content validator, Zustand store, progress/storage/search utilities, layout shell, checklist rendering, reusable progress bar
 - `.agents/skills/` — Frontend design + web design guidelines skills
 - `LICENSE` — MIT (Jitesh Thakur)
 
-**What needs to be built:** Everything. 0 of ~35 project-specific source files exist. The scaffold must be restructured and all PRD components, state, utilities, data, styles, and CI/CD must be created from scratch.
+**What still needs to be built:** Home-page scope onboarding + selected-scope global progress semantics, dark-mode pre-hydration script, CSP + GH Pages + CI/CD setup, and all Phase 2/3 UX/export polish.
+
+---
+
+## Implementation Status Snapshot (as of March 4, 2026)
+
+Legend: ✅ done · 🟡 partial/in-progress · ⏳ pending
+
+### Phase 1
+
+- ✅ **1.2 TypeScript interfaces** — `src/types/index.ts` created.
+- ✅ **1.3 Checklist JSON conversion** — `src/data/checklist.json` and `src/data/changelog.json` generated.
+- ✅ **1.4 Content validation** — `scripts/validate-content.ts` + npm script wired.
+- 🟡 **1.5 Zustand store** — core store implemented (item state + UI state + dark mode), but new scope-selection fields (`selectedSectionIds`, `hasCompletedOnboarding`) still pending.
+- ✅ **1.6 Utility libraries** — `progress.ts`, `storage.ts`, `search.ts` implemented.
+- ⏳ **1.6a Home page + scope selection** — not yet implemented (new requirement).
+- 🟡 **1.7 Core layout** — Header/Sidebar/Footer/ErrorBoundary + checklist shell implemented, but two-view flow (Home + Checklist) still pending.
+- ✅ **1.8 Checklist components** — SectionList/Section/SubSection/ChecklistItem implemented with tri-state + details.
+- ✅ **1.9 ProgressBar** — reusable component implemented and wired.
+- 🟡 **1.10 Dark mode** — toggle + persisted state in place; pre-hydration `index.html` script still pending.
+- ⏳ **1.11 CSP** — pending.
+- 🟡 **1.12 GH Pages files** — partial (files touched in workspace), finalize/verify pending.
+- ⏳ **1.13 GitHub Actions CI/CD** — pending.
+
+### Phase 2 / 3
+
+- ⏳ Not started yet (except groundwork in place for progress, notes, and section rendering).
 
 ---
 
@@ -81,7 +109,7 @@ Update `vite.config.ts` per PRD Section 12:
 
 ## Phase 1: MVP — Data + Core Checklist + Persistence
 
-**Goal:** A working SPA that renders all 228 checklist items with tri-state checkboxes, collapsible sections, progress bars, localStorage persistence, and dark mode. Deployable to GitHub Pages.
+**Goal:** A working SPA with Home-page scope selection that renders checklist content with tri-state checkboxes, collapsible sections, progress bars, localStorage persistence, and dark mode. Deployable to GitHub Pages.
 
 ### 1.1 Design system selection
 Before writing any components, choose:
@@ -143,13 +171,29 @@ Create `scripts/validate-content.ts` per PRD Section 14b:
 Create `src/store/useChecklistStore.ts` per PRD Section 8:
 - `itemStates: Record<string, ItemState>` — persisted
 - `isDarkMode: boolean` — persisted
+- `selectedSectionIds: string[]` — persisted; selected from Home page
+- `hasCompletedOnboarding: boolean` — persisted; true after first scope selection
 - `toggleItem(id)` — cycles unchecked → checked → na → unchecked
 - `setNote(id, note)` — updates note for an item
 - `resetAll()` — clears all item states
 - `importStates(states)` — bulk import from JSON
 - UI state (NOT persisted): `expandedSections: Record<string, boolean>`, `expandedItemId`, `priorityFilter`, `roleFilter`, `searchQuery`, `toastMessage`
-- Persist middleware with `partialize` — only `itemStates` and `isDarkMode`
+- Persist middleware with `partialize` — `itemStates`, `isDarkMode`, `selectedSectionIds`, `hasCompletedOnboarding`
 - Storage key: `"mcp-checklist-v1"`
+
+### 1.6a Home page + scope selection
+Create a Home page as the user entry point before checklist execution:
+- Route `/` renders Home page with checklist scope onboarding UI
+- User selects 1+ sections from Sections 1–7 (`tools` excluded)
+- CTA: "Start Checklist" stores selected section IDs and opens checklist view
+- If no section selected, disable CTA and show inline guidance
+- Add quick actions: "Select all core sections" and "Clear selection"
+- Add "Edit scope" entry from checklist page to return to Home and adjust scope
+
+Scope semantics:
+- Global counters and percentages are derived only from selected sections
+- Sidebar section list still shows all sections, but non-selected sections are visibly out-of-scope
+- Out-of-scope sections do not contribute to progress, milestones, or completion totals
 
 ### 1.6 Utility libraries
 Create `src/lib/progress.ts`:
@@ -170,7 +214,8 @@ Create the three-zone layout per PRD Section 3:
 
 **`src/App.tsx`** — Root layout:
 - Wraps children in `ErrorBoundary`
-- Three-zone grid: Header (Zone A), Sidebar (Zone B), Main Content (Zone C), Footer
+- Supports two top-level views: Home (scope selection) and Checklist
+- Checklist uses three-zone grid: Header (Zone A), Sidebar (Zone B), Main Content (Zone C), Footer
 - Loads `checklist.json` data
 
 **`src/components/ui/ErrorBoundary.tsx`** — per PRD 11c:
@@ -178,15 +223,16 @@ Create the three-zone layout per PRD Section 3:
 - Shows fallback: "Something went wrong. Your progress is safely saved. [Reload Page]"
 
 **`src/components/layout/Header.tsx`** — Sticky, 56px:
-- Global counter: "You've secured X of {totalItems} controls" (dynamic)
+- Global counter: "You've secured X of {selectedTotalItems} controls" (dynamic by selected scope)
 - Dark mode toggle
 - GitHub repo link
 - Hamburger menu icon (mobile only, `<768px`)
 
 **`src/components/layout/Sidebar.tsx`** — 240px, left side:
 - Site title
-- Global progress summary (checked / totalItems, percentage)
+- Global progress summary (checked / selectedTotalItems, percentage)
 - Section navigation list with per-section mini progress bars
+- Visual treatment for out-of-scope sections (e.g., muted + label "Not in scope")
 - Export/Import buttons (wired in Phase 3)
 - Version label + dark mode toggle
 - On mobile: hidden; rendered as slide-in drawer (280px) triggered by hamburger
@@ -256,7 +302,7 @@ Create `.github/workflows/deploy.yml` per PRD Section 2:
 - Trigger: push to `main`
 - Steps: checkout → setup Node 20 → `npm ci` → `npm run validate-content` → `npm run build` → deploy to `gh-pages` via `peaceiris/actions-gh-pages@v3`
 
-**Phase 1 deliverable:** Working SPA with all 228 items, tri-state checkboxes, collapsible sections, progress bars everywhere, dark mode, localStorage auto-save, and deployable to GitHub Pages.
+**Phase 1 deliverable:** Working SPA with Home-page scope selection, selected-scope progress semantics, tri-state checkboxes, collapsible sections, progress bars, dark mode, localStorage auto-save, and deployable to GitHub Pages.
 
 ---
 
@@ -267,10 +313,10 @@ Create `.github/workflows/deploy.yml` per PRD Section 2:
 ### 2.1 Milestone strip
 **`src/components/progress/MilestoneStrip.tsx`**:
 - Horizontal strip below toolbar with three badges
-- Baseline: all CRITICAL done (65 items)
-- Hardened: all CRITICAL + HIGH done (65 + 119 = 184 items)
-- Comprehensive: all items done or N/A (228 items)
-- Counts are dynamic from checklist data
+- Baseline: all selected-scope CRITICAL items done
+- Hardened: all selected-scope CRITICAL + HIGH items done
+- Comprehensive: all selected-scope items done or N/A
+- Counts are dynamic from selected sections only
 - Completed badge fills with color + checkmark, `scale(1.05)` pop animation
 - On mobile (`<768px`): badges stack vertically
 
@@ -283,7 +329,7 @@ Create `.github/workflows/deploy.yml` per PRD Section 2:
 - Queue logic: if multiple milestones crossed simultaneously, show only highest-tier (comprehensive > hardened > baseline)
 
 ### 2.3 Milestone detection
-- Reactive: Use Zustand selector `getMilestone(state.itemStates, allItems)` in the MilestoneStrip component
+- Reactive: Use Zustand selector `getMilestone(state.itemStates, selectedScopeItems)` in the MilestoneStrip component
 - `useEffect` detects transition from previous milestone → current
 - Fires toast on upward milestone transition only (not on page load with existing state)
 
@@ -342,7 +388,8 @@ Per PRD Section 11 (Accessibility):
 ### 3.1 JSON export
 Create `src/lib/export-json.ts` per PRD Section 9.1:
 - Builds full report object with `meta`, `summary`, `items`
-- All counts computed dynamically
+- All counts computed dynamically from selected scope
+- Include `selectedSectionIds` and `selectedSectionTitles` in `meta`
 - Downloads as `mcp-security-checklist-YYYY-MM-DD.json`
 - Wire to "Export JSON" button in Sidebar
 
@@ -434,7 +481,8 @@ Phase 1 (MVP)
   1.4  Content validation script
   1.5  Zustand store
   1.6  Utility libraries (progress, storage, search)
-  1.7  Core layout (App, ErrorBoundary, Header, Sidebar, Footer)
+  1.6a Home page + scope selection
+  1.7  Core layout (Home + Checklist views, ErrorBoundary, Header, Sidebar, Footer)
   1.8  Checklist components (SectionList, Section, SubSection, ChecklistItem)
   1.9  ProgressBar component
   1.10 Dark mode
