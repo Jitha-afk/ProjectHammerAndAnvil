@@ -8,11 +8,15 @@ type PriorityFilter = 'all' | 'CRITICAL' | 'HIGH+'
 interface ChecklistStore {
   itemStates: Record<string, ItemState>
   isDarkMode: boolean
+  selectedSectionIds: string[]
+  hasCompletedOnboarding: boolean
 
   toggleItem: (id: string) => void
   setNote: (id: string, note: string) => void
   resetAll: () => void
   importStates: (states: Record<string, ItemState>) => void
+  setSelectedSectionIds: (ids: string[]) => void
+  completeOnboarding: (ids: string[]) => void
 
   expandedSections: Record<string, boolean>
   expandedItemId: string | null
@@ -22,6 +26,8 @@ interface ChecklistStore {
   toastMessage: string | null
 
   toggleSection: (id: string) => void
+  expandSections: (ids: string[]) => void
+  collapseSections: (ids: string[]) => void
   setExpandedItem: (id: string | null) => void
   setPriorityFilter: (filter: PriorityFilter) => void
   setRoleFilter: (role: Role | 'all') => void
@@ -49,6 +55,8 @@ export const useChecklistStore = create<ChecklistStore>()(
     (set) => ({
       itemStates: {},
       isDarkMode: false,
+      selectedSectionIds: [],
+      hasCompletedOnboarding: false,
 
       toggleItem: (id) =>
         set((state) => {
@@ -89,6 +97,17 @@ export const useChecklistStore = create<ChecklistStore>()(
           itemStates: states,
         }),
 
+      setSelectedSectionIds: (ids) =>
+        set({
+          selectedSectionIds: ids,
+        }),
+
+      completeOnboarding: (ids) =>
+        set({
+          selectedSectionIds: ids,
+          hasCompletedOnboarding: true,
+        }),
+
       expandedSections: {
         'mcp-server': true,
       },
@@ -103,6 +122,22 @@ export const useChecklistStore = create<ChecklistStore>()(
           expandedSections: {
             ...state.expandedSections,
             [id]: !state.expandedSections[id],
+          },
+        })),
+
+      expandSections: (ids) =>
+        set((state) => ({
+          expandedSections: {
+            ...state.expandedSections,
+            ...Object.fromEntries(ids.map((id) => [id, true])),
+          },
+        })),
+
+      collapseSections: (ids) =>
+        set((state) => ({
+          expandedSections: {
+            ...state.expandedSections,
+            ...Object.fromEntries(ids.map((id) => [id, false])),
           },
         })),
 
@@ -142,6 +177,8 @@ export const useChecklistStore = create<ChecklistStore>()(
       partialize: (state) => ({
         itemStates: state.itemStates,
         isDarkMode: state.isDarkMode,
+        selectedSectionIds: state.selectedSectionIds,
+        hasCompletedOnboarding: state.hasCompletedOnboarding,
       }),
     },
   ),

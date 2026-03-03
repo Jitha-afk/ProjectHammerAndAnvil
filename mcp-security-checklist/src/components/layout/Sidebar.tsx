@@ -1,6 +1,10 @@
-import { Download, Upload, X } from 'lucide-react'
+import { Download, Upload } from 'lucide-react'
 
 import { ProgressBar } from '@/components/progress/ProgressBar'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { cn } from '@/lib/utils'
 import { computeProgress } from '@/lib/progress'
 import type { ChecklistData, ItemState } from '@/types'
 
@@ -9,8 +13,10 @@ interface SidebarProps {
   itemStates: Record<string, ItemState>
   totalItems: number
   securedCount: number
+  selectedSectionIds: string[]
   isDarkMode: boolean
   onToggleDarkMode: () => void
+  onEditScope: () => void
   isMobileOpen: boolean
   onCloseMobileNav: () => void
 }
@@ -20,8 +26,10 @@ function SidebarContent({
   itemStates,
   totalItems,
   securedCount,
+  selectedSectionIds,
   isDarkMode,
   onToggleDarkMode,
+  onEditScope,
 }: Omit<SidebarProps, 'isMobileOpen' | 'onCloseMobileNav'>) {
   const globalProgress = totalItems === 0
     ? 0
@@ -34,73 +42,94 @@ function SidebarContent({
         <p className="mt-1 text-xs text-muted-foreground">Version {checklistData.version}</p>
       </div>
 
-      <section className="rounded-md border border-border p-3">
-        <p className="text-xs text-muted-foreground">Global progress</p>
-        <p className="mt-1 text-sm font-medium text-foreground">
-          {securedCount}/{totalItems} controls
-        </p>
-        <div className="mt-2">
-          <ProgressBar label="Global checklist progress" size="sidebar" value={globalProgress} />
-        </div>
-        <p className="mt-1 text-xs text-muted-foreground">{globalProgress}% complete</p>
-      </section>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xs font-medium text-muted-foreground">Global progress</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <p className="text-sm font-medium text-foreground">
+            {securedCount}/{totalItems} controls
+          </p>
+          <div className="mt-2">
+            <ProgressBar label="Global checklist progress" size="sidebar" value={globalProgress} />
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">{globalProgress}% complete</p>
+        </CardContent>
+      </Card>
 
       <nav aria-label="Section navigation" className="space-y-2">
         {checklistData.sections.map((section) => {
+          const isReferenceOnly = section.id === 'tools'
+          const isInScope = isReferenceOnly || selectedSectionIds.includes(section.id)
           const sectionItems = section.subsections.flatMap((subSection) => subSection.items)
           const progressValue =
-            section.id === 'tools'
+            isReferenceOnly || !isInScope
               ? null
               : computeProgress(sectionItems, itemStates)
 
           return (
-            <a
-              className="block rounded-md border border-border p-2 hover:bg-muted/40"
-              href={`#section-${section.id}`}
-              key={section.id}
-            >
-              <p className="text-sm font-medium text-foreground">{section.number}. {section.title}</p>
-              {section.id !== 'tools' && (
-                <>
-                  <div className="mt-2">
-                    <ProgressBar
-                      label={`${section.title} progress`}
-                      size="thin"
-                      value={progressValue}
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {progressValue === null ? 'N/A' : `${progressValue}%`}
-                  </p>
-                </>
-              )}
-            </a>
+            <Card className={cn(!isInScope && 'opacity-60')} key={section.id}>
+              <Button asChild className="h-auto w-full justify-start p-0" variant="ghost">
+                <a className="block p-2 text-left" href={`#section-${section.id}`}>
+                  <p className="text-sm font-medium text-foreground">{section.number}. {section.title}</p>
+                  {isReferenceOnly ? (
+                    <p className="mt-1 text-xs text-muted-foreground">Reference only</p>
+                  ) : !isInScope ? (
+                    <p className="mt-1 text-xs font-medium text-muted-foreground">Not in scope</p>
+                  ) : (
+                    <>
+                      <div className="mt-2">
+                        <ProgressBar
+                          label={`${section.title} progress`}
+                          size="thin"
+                          value={progressValue}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {progressValue === null ? 'N/A' : `${progressValue}%`}
+                      </p>
+                    </>
+                  )}
+                </a>
+              </Button>
+            </Card>
           )
         })}
       </nav>
 
       <div className="mt-auto space-y-2">
-        <button
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-border px-3 text-sm"
+        <Button
+          className="min-h-11 w-full"
+          onClick={onEditScope}
           type="button"
+          variant="outline"
+        >
+          Edit scope
+        </Button>
+        <Button
+          className="min-h-11 w-full"
+          type="button"
+          variant="outline"
         >
           <Download className="size-4" />
           Export JSON
-        </button>
-        <button
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-border px-3 text-sm"
+        </Button>
+        <Button
+          className="min-h-11 w-full"
           type="button"
+          variant="outline"
         >
           <Upload className="size-4" />
           Import JSON
-        </button>
-        <button
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-3 text-sm"
+        </Button>
+        <Button
+          className="min-h-11 w-full"
           onClick={onToggleDarkMode}
           type="button"
+          variant="outline"
         >
           {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -111,8 +140,10 @@ export function Sidebar({
   itemStates,
   totalItems,
   securedCount,
+  selectedSectionIds,
   isDarkMode,
   onToggleDarkMode,
+  onEditScope,
   isMobileOpen,
   onCloseMobileNav,
 }: SidebarProps) {
@@ -123,36 +154,28 @@ export function Sidebar({
           checklistData={checklistData}
           isDarkMode={isDarkMode}
           itemStates={itemStates}
+          onEditScope={onEditScope}
           onToggleDarkMode={onToggleDarkMode}
+          selectedSectionIds={selectedSectionIds}
           securedCount={securedCount}
           totalItems={totalItems}
         />
       </aside>
 
-      {isMobileOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 md:hidden" role="presentation">
-          <aside className="h-full w-[280px] border-r border-border bg-background">
-            <div className="flex h-14 items-center justify-end border-b border-border px-2">
-              <button
-                aria-label="Close navigation"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border"
-                onClick={onCloseMobileNav}
-                type="button"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            <SidebarContent
-              checklistData={checklistData}
-              isDarkMode={isDarkMode}
-              itemStates={itemStates}
-              onToggleDarkMode={onToggleDarkMode}
-              securedCount={securedCount}
-              totalItems={totalItems}
-            />
-          </aside>
-        </div>
-      )}
+      <Sheet onOpenChange={(isOpen) => !isOpen && onCloseMobileNav()} open={isMobileOpen}>
+        <SheetContent className="w-[280px] border-r border-border p-0 md:hidden" showCloseButton side="left">
+          <SidebarContent
+            checklistData={checklistData}
+            isDarkMode={isDarkMode}
+            itemStates={itemStates}
+            onEditScope={onEditScope}
+            onToggleDarkMode={onToggleDarkMode}
+            selectedSectionIds={selectedSectionIds}
+            securedCount={securedCount}
+            totalItems={totalItems}
+          />
+        </SheetContent>
+      </Sheet>
     </>
   )
 }

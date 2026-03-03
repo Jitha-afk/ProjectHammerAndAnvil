@@ -36,7 +36,7 @@
 - `.agents/skills/` — Frontend design + web design guidelines skills
 - `LICENSE` — MIT (Jitesh Thakur)
 
-**What still needs to be built:** Home-page scope onboarding + selected-scope global progress semantics, dark-mode pre-hydration script, CSP + GH Pages + CI/CD setup, and all Phase 2/3 UX/export polish.
+**What still needs to be built:** Phase 3 export/import + migration/polish work (JSON/PDF export, import validation, print stylesheet, version migration, final accessibility/error-handling polish, docs/contributing).
 
 ---
 
@@ -49,20 +49,22 @@ Legend: ✅ done · 🟡 partial/in-progress · ⏳ pending
 - ✅ **1.2 TypeScript interfaces** — `src/types/index.ts` created.
 - ✅ **1.3 Checklist JSON conversion** — `src/data/checklist.json` and `src/data/changelog.json` generated.
 - ✅ **1.4 Content validation** — `scripts/validate-content.ts` + npm script wired.
-- 🟡 **1.5 Zustand store** — core store implemented (item state + UI state + dark mode), but new scope-selection fields (`selectedSectionIds`, `hasCompletedOnboarding`) still pending.
+- ✅ **1.5 Zustand store** — persisted scope-selection fields (`selectedSectionIds`, `hasCompletedOnboarding`) added, plus UI state/filters and section expand/collapse helpers.
 - ✅ **1.6 Utility libraries** — `progress.ts`, `storage.ts`, `search.ts` implemented.
-- ⏳ **1.6a Home page + scope selection** — not yet implemented (new requirement).
-- 🟡 **1.7 Core layout** — Header/Sidebar/Footer/ErrorBoundary + checklist shell implemented, but two-view flow (Home + Checklist) still pending.
+- ✅ **1.6a Home page + scope selection** — Home onboarding flow implemented with section selection, quick actions, and Start Checklist gating.
+- ✅ **1.7 Core layout** — Two-view flow (Home + Checklist), scope editing, sidebar out-of-scope treatment, and mobile drawer implemented.
 - ✅ **1.8 Checklist components** — SectionList/Section/SubSection/ChecklistItem implemented with tri-state + details.
 - ✅ **1.9 ProgressBar** — reusable component implemented and wired.
-- 🟡 **1.10 Dark mode** — toggle + persisted state in place; pre-hydration `index.html` script still pending.
-- ⏳ **1.11 CSP** — pending.
-- 🟡 **1.12 GH Pages files** — partial (files touched in workspace), finalize/verify pending.
-- ⏳ **1.13 GitHub Actions CI/CD** — pending.
+- ✅ **1.10 Dark mode** — persisted toggle + pre-hydration `index.html` script implemented.
+- ✅ **1.11 CSP** — CSP meta tag implemented in `index.html`.
+- ✅ **1.12 GH Pages files** — `public/404.html` in place.
+- ✅ **1.13 GitHub Actions CI/CD** — workflow added at `.github/workflows/deploy.yml`.
 
 ### Phase 2 / 3
 
-- ⏳ Not started yet (except groundwork in place for progress, notes, and section rendering).
+- ✅ **Phase 2 implemented** — Milestone strip, toast notifications, reactive milestone detection, toolbar (search/priority/role/reset/expand-collapse), priority badges, modal, and keyboard shortcuts are all wired.
+- ✅ **shadcn/ui refactor completed for core surfaces** — Home cards, Header, Footer, Sidebar, Progress, and tri-state checkbox upgraded to shadcn primitives.
+- ⏳ **Phase 3 pending** — export/import, print/PDF, migration, mobile/accessibility/error-handling polish, docs updates.
 
 ---
 

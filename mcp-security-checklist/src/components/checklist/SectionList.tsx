@@ -7,11 +7,16 @@ import type { ChecklistData, ItemState } from '@/types'
 interface SectionListProps {
   checklistData: ChecklistData
   itemStates: Record<string, ItemState>
+  selectedSectionIds: string[]
 }
 
 const QUICK_WIN_ITEM_ID = 'srv-api-001'
 
-export function SectionList({ checklistData, itemStates }: SectionListProps) {
+export function SectionList({
+  checklistData,
+  itemStates,
+  selectedSectionIds,
+}: SectionListProps) {
   const expandedItemId = useChecklistStore((state) => state.expandedItemId)
   const setExpandedItem = useChecklistStore((state) => state.setExpandedItem)
 
@@ -26,7 +31,12 @@ export function SectionList({ checklistData, itemStates }: SectionListProps) {
   return (
     <div className="space-y-8">
       {checklistData.sections.map((section) => (
-        <Section itemStates={itemStates} key={section.id} section={section} />
+        <Section
+          isInScope={section.id === 'tools' || selectedSectionIds.includes(section.id)}
+          itemStates={itemStates}
+          key={section.id}
+          section={section}
+        />
       ))}
     </div>
   )

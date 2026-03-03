@@ -10,6 +10,7 @@ import { SubSection } from './SubSection'
 interface SectionProps {
   section: SectionType
   itemStates: Record<string, ItemState>
+  isInScope: boolean
 }
 
 const iconMap = {
@@ -23,13 +24,14 @@ const iconMap = {
   Wrench,
 } as const
 
-export function Section({ section, itemStates }: SectionProps) {
+export function Section({ section, itemStates, isInScope }: SectionProps) {
   const expandedSections = useChecklistStore((state) => state.expandedSections)
   const toggleSection = useChecklistStore((state) => state.toggleSection)
 
+  const isReferenceOnly = section.id === 'tools'
   const sectionItems = section.subsections.flatMap((subSection) => subSection.items)
   const sectionProgress =
-    section.id === 'tools' ? null : computeProgress(sectionItems, itemStates)
+    isReferenceOnly || !isInScope ? null : computeProgress(sectionItems, itemStates)
 
   const isExpanded = expandedSections[section.id] ?? false
   const Icon = iconMap[section.icon as keyof typeof iconMap] ?? Shield
@@ -56,7 +58,7 @@ export function Section({ section, itemStates }: SectionProps) {
           />
         </button>
 
-        {section.id !== 'tools' && (
+        {!isReferenceOnly && isInScope && (
           <div className="border-t border-border px-3 pb-3 pt-2">
             <ProgressBar label={`${section.title} section progress`} size="medium" value={sectionProgress} />
             <p className="mt-1 text-xs text-muted-foreground">
@@ -64,11 +66,17 @@ export function Section({ section, itemStates }: SectionProps) {
             </p>
           </div>
         )}
+
+        {!isReferenceOnly && !isInScope && (
+          <p className="border-t border-border px-3 py-2 text-xs font-medium text-muted-foreground">
+            Not in scope · excluded from global progress and completion
+          </p>
+        )}
       </header>
 
       {isExpanded && (
         <div className="space-y-5 pl-2 md:pl-6" id={contentId}>
-          {section.id === 'tools' ? (
+          {isReferenceOnly ? (
             <div className="rounded-md border border-border bg-card/40 p-4 text-sm text-muted-foreground">
               <p>{section.description}</p>
               <p className="mt-2">Reference-only section: no checklist items or progress tracking.</p>

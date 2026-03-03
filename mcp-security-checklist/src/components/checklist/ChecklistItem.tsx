@@ -1,22 +1,24 @@
-import { Check, Minus } from 'lucide-react'
-
+import { PriorityBadge } from '@/components/ui/PriorityBadge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { cn } from '@/lib/utils'
 import { useChecklistStore } from '@/store/useChecklistStore'
 import type { ChecklistItem as ChecklistItemType } from '@/types'
 
 interface ChecklistItemProps {
   item: ChecklistItemType
   shouldPulse: boolean
+  isHidden: boolean
+  isDimmed: boolean
+  isHighlighted: boolean
 }
 
-function getAriaChecked(status: 'unchecked' | 'checked' | 'na'): 'true' | 'false' | 'mixed' {
-  if (status === 'na') {
-    return 'mixed'
-  }
-
-  return status === 'checked' ? 'true' : 'false'
-}
-
-export function ChecklistItem({ item, shouldPulse }: ChecklistItemProps) {
+export function ChecklistItem({
+  item,
+  shouldPulse,
+  isHidden,
+  isDimmed,
+  isHighlighted,
+}: ChecklistItemProps) {
   const itemStates = useChecklistStore((state) => state.itemStates)
   const toggleItem = useChecklistStore((state) => state.toggleItem)
   const setNote = useChecklistStore((state) => state.setNote)
@@ -24,6 +26,7 @@ export function ChecklistItem({ item, shouldPulse }: ChecklistItemProps) {
   const setExpandedItem = useChecklistStore((state) => state.setExpandedItem)
 
   const status = itemStates[item.id]?.status ?? 'unchecked'
+  const checkedValue = status === 'checked' ? true : status === 'na' ? 'indeterminate' : false
   const note = itemStates[item.id]?.note ?? ''
   const isExpanded = expandedItemId === item.id
 
@@ -34,27 +37,26 @@ export function ChecklistItem({ item, shouldPulse }: ChecklistItemProps) {
       : 'text-foreground'
 
   return (
-    <article className="rounded-md border border-border bg-card/40">
+    <article
+      className={cn(
+        'rounded-md border border-border bg-card/40',
+        isHidden && 'hidden',
+        isDimmed && 'opacity-40',
+        isHighlighted && 'border-foreground/50 bg-accent/10',
+      )}
+    >
       <div className="flex items-start gap-3 p-3">
-        <button
-          aria-checked={getAriaChecked(status)}
+        <Checkbox
           aria-label={`Mark ${item.title}`}
-          className={`mt-0.5 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border ${shouldPulse ? 'animate-pulse' : ''}`}
-          onClick={() => toggleItem(item.id)}
-          onKeyDown={(event) => {
-            if (event.key !== ' ' && event.key !== 'Enter') {
-              return
-            }
-
-            event.preventDefault()
+          checked={checkedValue}
+          className={cn(
+            'mt-0.5 size-11 rounded-md border-border data-[state=checked]:bg-emerald-500 data-[state=checked]:text-white data-[state=indeterminate]:bg-muted data-[state=indeterminate]:text-muted-foreground',
+            shouldPulse && 'animate-pulse',
+          )}
+          onCheckedChange={() => {
             toggleItem(item.id)
           }}
-          role="checkbox"
-          type="button"
-        >
-          {status === 'checked' && <Check className="size-4 text-emerald-500" />}
-          {status === 'na' && <Minus className="size-4 text-muted-foreground" />}
-        </button>
+        />
 
         <div className="min-w-0 flex-1">
           <button
@@ -65,9 +67,9 @@ export function ChecklistItem({ item, shouldPulse }: ChecklistItemProps) {
             {item.title}
           </button>
 
-          <span className="ml-2 inline-flex rounded-md border border-border px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-            {item.priority}
-          </span>
+          <div className="mt-2 md:mt-0 md:inline-flex md:align-middle md:pl-2">
+            <PriorityBadge priority={item.priority} />
+          </div>
         </div>
       </div>
 
