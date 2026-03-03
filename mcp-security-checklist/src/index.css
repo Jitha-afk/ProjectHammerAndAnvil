@@ -21,25 +21,27 @@
 }
 
 /* ── Theme: Light Mode ──────────────────────────────────── */
+/* Warm cream backgrounds + teal accent — inspired by designsystemchecklist.com */
 :root {
   --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --background: oklch(0.985 0.002 240);
-  --background-secondary: oklch(0.97 0.004 240);
-  --background-tertiary: oklch(0.955 0.006 240);
-  --foreground: oklch(0.15 0.02 250);
-  --foreground-secondary: oklch(0.35 0.02 250);
-  --foreground-muted: oklch(0.55 0.015 250);
+  /* Warm cream backgrounds */
+  --background: oklch(0.98 0.006 90);
+  --background-secondary: oklch(0.96 0.008 85);
+  --background-tertiary: oklch(0.94 0.010 85);
+  --foreground: oklch(0.20 0.015 250);
+  --foreground-secondary: oklch(0.42 0.012 250);
+  --foreground-muted: oklch(0.55 0.010 250);
 
-  --border: oklch(0.90 0.005 250);
-  --border-hover: oklch(0.82 0.01 250);
+  --border: oklch(0.90 0.008 85);
+  --border-hover: oklch(0.82 0.010 85);
   --ring: oklch(0.55 0.12 195);
 
-  /* Accent: Deep Teal — trustworthy, security-appropriate */
+  /* Accent: Deep Teal */
   --accent: oklch(0.55 0.12 195);
   --accent-hover: oklch(0.48 0.13 195);
-  --accent-light: oklch(0.94 0.03 195);
+  --accent-light: oklch(0.95 0.02 195);
   --accent-foreground: oklch(0.98 0.005 195);
 
   /* Priority Colors */
@@ -56,34 +58,38 @@
   --recommended-foreground: oklch(0.45 0.15 155);
 
   /* Progress */
-  --progress-low: oklch(0.55 0.22 25);
-  --progress-mid: oklch(0.65 0.18 70);
-  --progress-high: oklch(0.60 0.16 155);
-  --progress-track: oklch(0.92 0.005 250);
+  --progress-track: oklch(0.92 0.006 85);
+  --progress-fill: oklch(0.55 0.12 195);
+  --progress-complete: oklch(0.55 0.14 155);
 
   /* Surfaces */
-  --card: oklch(0.99 0.002 240);
-  --card-hover: oklch(0.975 0.004 240);
-  --sidebar: oklch(0.975 0.004 240);
-  --sidebar-border: oklch(0.91 0.005 250);
+  --card: oklch(0.99 0.004 90);
+  --card-hover: oklch(0.97 0.006 90);
+  --sidebar: oklch(0.975 0.004 90);
+  --sidebar-border: oklch(0.91 0.006 85);
 
   /* Milestone badges */
   --milestone-baseline: oklch(0.55 0.12 195);
   --milestone-hardened: oklch(0.60 0.16 280);
   --milestone-comprehensive: oklch(0.60 0.16 155);
+
+  /* Layout */
+  --page-width: 720px;
+  --page-padding: 48px;
+  --border-radius: 2px;
 }
 
 /* ── Theme: Dark Mode ───────────────────────────────────── */
 .dark {
-  --background: oklch(0.14 0.01 250);
-  --background-secondary: oklch(0.17 0.012 250);
-  --background-tertiary: oklch(0.20 0.014 250);
-  --foreground: oklch(0.93 0.008 250);
-  --foreground-secondary: oklch(0.70 0.01 250);
-  --foreground-muted: oklch(0.50 0.01 250);
+  --background: oklch(0.14 0.008 250);
+  --background-secondary: oklch(0.17 0.010 250);
+  --background-tertiary: oklch(0.20 0.012 250);
+  --foreground: oklch(0.92 0.006 250);
+  --foreground-secondary: oklch(0.68 0.008 250);
+  --foreground-muted: oklch(0.50 0.008 250);
 
-  --border: oklch(0.28 0.01 250);
-  --border-hover: oklch(0.35 0.012 250);
+  --border: oklch(0.26 0.008 250);
+  --border-hover: oklch(0.34 0.010 250);
   --ring: oklch(0.60 0.12 195);
 
   --accent: oklch(0.65 0.12 195);
@@ -103,15 +109,14 @@
   --recommended-light: oklch(0.22 0.04 155);
   --recommended-foreground: oklch(0.75 0.12 155);
 
-  --progress-low: oklch(0.65 0.20 25);
-  --progress-mid: oklch(0.72 0.16 70);
-  --progress-high: oklch(0.68 0.14 155);
-  --progress-track: oklch(0.24 0.01 250);
+  --progress-track: oklch(0.24 0.008 250);
+  --progress-fill: oklch(0.65 0.12 195);
+  --progress-complete: oklch(0.68 0.14 155);
 
-  --card: oklch(0.17 0.012 250);
-  --card-hover: oklch(0.20 0.014 250);
-  --sidebar: oklch(0.16 0.01 250);
-  --sidebar-border: oklch(0.25 0.01 250);
+  --card: oklch(0.17 0.010 250);
+  --card-hover: oklch(0.20 0.012 250);
+  --sidebar: oklch(0.16 0.008 250);
+  --sidebar-border: oklch(0.25 0.008 250);
 
   --milestone-baseline: oklch(0.65 0.12 195);
   --milestone-hardened: oklch(0.68 0.14 280);
@@ -131,10 +136,27 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  /* Typography — tighter tracking on headings, relaxed on body */
+  h1, h2, h3 {
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  h4, h5, h6 {
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+  }
+
+  p {
+    line-height: 1.65;
   }
 
   code, pre, kbd {
     font-family: var(--font-mono);
+    letter-spacing: 0;
   }
 
   /* Focus rings for accessibility */
@@ -174,6 +196,8 @@
     background: var(--border-hover);
   }
 
+  /* ── Keyframe Animations ──────────────────────────────── */
+
   @keyframes toast-lifecycle {
     0% {
       opacity: 0;
@@ -192,9 +216,24 @@
       transform: translateY(8px);
     }
   }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* ── Utility layer ──────────────────────────────────────── */
 @utility text-balance {
   text-wrap: balance;
+}
+
+@utility animate-page-enter {
+  animation: page-enter 0.4s ease-out both;
 }

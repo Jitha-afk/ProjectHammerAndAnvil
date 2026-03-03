@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { CategoryView } from '@/components/layout/CategoryView'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { Home } from '@/components/layout/Home'
-import { Sidebar } from '@/components/layout/Sidebar'
-import { SectionList } from '@/components/checklist/SectionList'
-import { MilestoneStrip } from '@/components/progress/MilestoneStrip'
-import { Toolbar } from '@/components/toolbar/Toolbar'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Modal } from '@/components/ui/Modal'
 import { Toast } from '@/components/ui/Toast'
@@ -22,9 +19,9 @@ const CORE_SECTION_IDS = typedChecklistData.sections
   .map((section) => section.id)
 
 function App() {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const [isEditingScope, setIsEditingScope] = useState(false)
   const [isResetModalOpen, setIsResetModalOpen] = useState(false)
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
 
   const itemStates = useChecklistStore((state) => state.itemStates)
@@ -42,24 +39,29 @@ function App() {
   const completeOnboarding = useChecklistStore((state) => state.completeOnboarding)
 
   const showHome = !hasCompletedOnboarding || isEditingScope || selectedSectionIds.length === 0
+  const showChecklist = !showHome && activeSectionId !== null
 
   const selectedSectionSet = useMemo(
     () => new Set(selectedSectionIds),
     [selectedSectionIds],
   )
 
-  const selectedItems = useMemo(
-    () =>
-      typedChecklistData.sections
-        .filter((section) => selectedSectionSet.has(section.id))
-        .flatMap((section) => section.subsections)
-        .flatMap((subsection) => subsection.items),
+  const selectedSections = useMemo(
+    () => typedChecklistData.sections.filter((section) => selectedSectionSet.has(section.id)),
     [selectedSectionSet],
   )
 
-  const navigationSectionIds = useMemo(
-    () => typedChecklistData.sections.map((section) => section.id),
-    [],
+  const selectedItems = useMemo(
+    () =>
+      selectedSections
+        .flatMap((section) => section.subsections)
+        .flatMap((subsection) => subsection.items),
+    [selectedSections],
+  )
+
+  const activeSection = useMemo(
+    () => typedChecklistData.sections.find((section) => section.id === activeSectionId) ?? null,
+    [activeSectionId],
   )
 
   const securedCount = useMemo(
@@ -82,37 +84,16 @@ function App() {
     document.documentElement.classList.toggle('dark', isDarkMode)
   }, [isDarkMode])
 
-  const navigateSection = useCallback(
-    (direction: -1 | 1) => {
-      const sectionElements = navigationSectionIds
-        .map((id) => document.getElementById(`section-${id}`))
-        .filter((element): element is HTMLElement => element !== null)
+  const handleNavigateSection = useCallback((sectionId: string) => {
+    setActiveSectionId(sectionId)
+    setExpandedItem(null)
+    setSearch('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [setExpandedItem, setSearch])
 
-      if (sectionElements.length === 0) {
-        return
-      }
-
-      const currentIndex = sectionElements.reduce((closestIndex, element, index) => {
-        const distance = Math.abs(element.getBoundingClientRect().top - 80)
-        const currentClosestDistance = Math.abs(
-          sectionElements[closestIndex].getBoundingClientRect().top - 80,
-        )
-
-        return distance < currentClosestDistance ? index : closestIndex
-      }, 0)
-
-      const nextIndex = Math.min(
-        sectionElements.length - 1,
-        Math.max(0, currentIndex + direction),
-      )
-
-      sectionElements[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' })
-    },
-    [navigationSectionIds],
-  )
-
+  // Keyboard shortcuts for checklist view
   useEffect(() => {
-    if (showHome) {
+    if (!showChecklist) {
       return
     }
 
@@ -140,21 +121,24 @@ function App() {
         return
       }
 
-      if (event.key === '[') {
+      // Navigate between sections with [ and ]
+      if (event.key === '[' || event.key === ']') {
         event.preventDefault()
-        navigateSection(-1)
-        return
-      }
-
-      if (event.key === ']') {
-        event.preventDefault()
-        navigateSection(1)
+        const currentIndex = selectedSections.findIndex((s) => s.id === activeSectionId)
+        if (currentIndex === -1) {
+          return
+        }
+        const direction = event.key === '[' ? -1 : 1
+        const nextIndex = Math.min(selectedSections.length - 1, Math.max(0, currentIndex + direction))
+        if (nextIndex !== currentIndex) {
+          handleNavigateSection(selectedSections[nextIndex].id)
+        }
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [navigateSection, searchQuery, setExpandedItem, setSearch, showHome])
+  }, [showChecklist, activeSectionId, selectedSections, searchQuery, setExpandedItem, setSearch, handleNavigateSection])
 
   const handleToggleScopeSection = (sectionId: string) => {
     const nextSelection = selectedSectionIds.includes(sectionId)
@@ -175,10 +159,24 @@ function App() {
   const handleStartChecklist = () => {
     completeOnboarding(selectedSectionIds)
     setIsEditingScope(false)
+    // Navigate to first selected section
+    if (selectedSectionIds.length > 0) {
+      const firstSelected = typedChecklistData.sections.find(
+        (section) => selectedSectionIds.includes(section.id),
+      )
+      if (firstSelected) {
+        setActiveSectionId(firstSelected.id)
+      }
+    }
   }
 
   const handleEditScope = () => {
-    setIsMobileNavOpen(false)
+    setActiveSectionId(null)
+    setIsEditingScope(true)
+  }
+
+  const handleBackToHome = () => {
+    setActiveSectionId(null)
     setIsEditingScope(true)
   }
 
@@ -190,10 +188,11 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-[var(--background)] text-foreground">
         {showHome ? (
           <Home
             checklistData={typedChecklistData}
+            itemStates={itemStates}
             onClearSelection={handleClearScopeSelection}
             onSelectAllCore={handleSelectAllCoreSections}
             onStartChecklist={handleStartChecklist}
@@ -203,48 +202,37 @@ function App() {
         ) : (
           <>
             <Header
+              activeSectionTitle={activeSection?.title ?? null}
               isDarkMode={isDarkMode}
               onEditScope={handleEditScope}
-              onOpenMobileNav={() => setIsMobileNavOpen(true)}
               onToggleDarkMode={toggleDarkMode}
               securedCount={securedCount}
               totalItems={selectedTotalItems}
             />
 
-            <div className="mx-auto flex max-w-[1400px]">
-              <Sidebar
-                checklistData={typedChecklistData}
-                isDarkMode={isDarkMode}
-                isMobileOpen={isMobileNavOpen}
-                itemStates={itemStates}
-                onCloseMobileNav={() => setIsMobileNavOpen(false)}
-                onEditScope={handleEditScope}
-                onToggleDarkMode={toggleDarkMode}
-                securedCount={securedCount}
-                selectedSectionIds={selectedSectionIds}
-                totalItems={selectedTotalItems}
-              />
-
-              <main className="min-h-[calc(100vh-7rem)] flex-1 px-4 py-6 md:px-6">
-                <section className="space-y-4" id="main-content">
-                  <Toolbar
-                    onResetRequested={() => setIsResetModalOpen(true)}
-                    searchInputRef={searchInputRef}
-                    sections={typedChecklistData.sections}
-                  />
-                  <MilestoneStrip
-                    itemStates={itemStates}
-                    items={selectedItems}
-                    onMilestoneReached={showToast}
-                  />
-                  <SectionList
-                    checklistData={typedChecklistData}
-                    itemStates={itemStates}
-                    selectedSectionIds={selectedSectionIds}
-                  />
-                </section>
-              </main>
-            </div>
+            {/* Single-column reading layout — no sidebar */}
+            <main className="mx-auto max-w-[var(--page-width)] px-6 pb-20 pt-8 md:px-[var(--page-padding)] md:pb-36">
+              {activeSection ? (
+                <CategoryView
+                  allSelectedItems={selectedItems}
+                  checklistData={typedChecklistData}
+                  itemStates={itemStates}
+                  onBackToHome={handleBackToHome}
+                  onMilestoneReached={showToast}
+                  onNavigate={handleNavigateSection}
+                  onResetRequested={() => setIsResetModalOpen(true)}
+                  searchInputRef={searchInputRef}
+                  section={activeSection}
+                  selectedSections={selectedSections}
+                />
+              ) : (
+                <div className="flex min-h-[50vh] items-center justify-center">
+                  <p className="text-sm text-[var(--foreground-muted)]">
+                    Select a section to begin.
+                  </p>
+                </div>
+              )}
+            </main>
 
             <Modal
               confirmLabel="Reset all"

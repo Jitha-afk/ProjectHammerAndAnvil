@@ -1,4 +1,3 @@
-import { ProgressBar } from '@/components/progress/ProgressBar'
 import { computeProgress } from '@/lib/progress'
 import { searchItems } from '@/lib/search'
 import { useChecklistStore } from '@/store/useChecklistStore'
@@ -41,36 +40,52 @@ export function SubSection({ subSection, itemStates }: SubSectionProps) {
   }
 
   const progress = computeProgress(sortedItems, itemStates)
+  const totalItems = sortedItems.length
 
   return (
-    <section className="space-y-3" id={`subsection-${subSection.id}`}>
-      <header className="rounded-md border border-border bg-muted/30 p-3">
-        <div className="flex items-center justify-between gap-3">
-          <h4 className="text-sm font-semibold text-foreground">
+    <section id={`subsection-${subSection.id}`}>
+      {/* Sticky section title — like the reference site */}
+      <header className="sticky top-14 z-10 -mx-6 bg-[var(--background)] px-6 py-4 md:-mx-[var(--page-padding)] md:px-[var(--page-padding)]">
+        <div className="flex items-baseline justify-between gap-4">
+          <h3 className="text-lg font-normal tracking-tight text-foreground md:text-xl">
             {subSection.number} {subSection.title}
-          </h4>
-          <p className="text-xs text-muted-foreground">{sortedItems.length} items</p>
+          </h3>
+          <span className={`shrink-0 text-sm tabular-nums ${
+            progress === 100
+              ? 'font-medium text-[var(--progress-complete)]'
+              : 'text-[var(--foreground-muted)]'
+          }`}>
+            {progress === 100 ? 'Completed' : `${totalItems} controls`}
+          </span>
         </div>
-        <div className="mt-2">
-          <ProgressBar label={`${subSection.title} subsection progress`} size="thin" value={progress} />
+
+        {/* Thin progress bar */}
+        <div className="mt-2 h-[3px] w-full overflow-hidden rounded-[1px] bg-[var(--progress-track)]">
+          <div
+            className={`h-full transition-all duration-150 ease-in-out ${
+              progress === 100 ? 'bg-[var(--progress-complete)]' : 'bg-[var(--accent)]'
+            }`}
+            style={{ width: `${progress ?? 0}%` }}
+          />
         </div>
       </header>
 
-      <div className="space-y-2">
+      {/* Checklist items — grid layout with generous gap */}
+      <div className="mt-6 grid gap-8">
         {sortedItems.map((item, index) => {
           const isSearchMatch = matchedItemIds.has(item.id)
           const isPriorityMatch = passesPriorityFilter(item.priority)
           const isRoleMatch = roleFilter === 'all' || item.roles.includes(roleFilter)
 
           return (
-          <ChecklistItem
-            item={item}
-            isDimmed={!isRoleMatch}
-            isHidden={!isSearchMatch || !isPriorityMatch}
-            isHighlighted={searchQuery.trim().length > 0 && isSearchMatch}
-            key={item.id}
-            shouldPulse={subSection.number === '1.1' && index === 0}
-          />
+            <ChecklistItem
+              isDimmed={!isRoleMatch}
+              isHidden={!isSearchMatch || !isPriorityMatch}
+              isHighlighted={searchQuery.trim().length > 0 && isSearchMatch}
+              item={item}
+              key={item.id}
+              shouldPulse={subSection.number === '1.1' && index === 0}
+            />
           )
         })}
       </div>
