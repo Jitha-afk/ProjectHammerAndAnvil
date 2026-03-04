@@ -100,7 +100,6 @@ function App() {
 
   useEffect(() => {
     if (route !== '/') {
-      setIsHomeTopNavVisible(true)
       return
     }
 

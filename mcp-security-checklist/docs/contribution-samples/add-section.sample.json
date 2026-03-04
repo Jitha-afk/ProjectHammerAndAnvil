@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-section",
+  "change": {
+    "section": {
+      "id": "example-section",
+      "number": 9,
+      "title": "Example Section",
+      "icon": "Shield",
+      "description": "High-level section purpose statement.",
+      "whyItMatters": "Optional context for readers.",
+      "subsections": [
+        {
+          "id": "example-subsection",
+          "number": "9.1",
+          "title": "Example Subsection",
+          "description": "Optional subsection description.",
+          "items": [
+            {
+              "id": "exm-sec-001",
+              "title": "Example Item",
+              "description": "Describe the required control.",
+              "priority": "CRITICAL",
+              "roles": [
+                "security-engineer"
+              ],
+              "tags": [
+                "mcp-security"
+              ],
+              "sources": [
+                {
+                  "label": "OWASP Top 10 for Agentic Applications 2026"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

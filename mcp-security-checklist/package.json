@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "validate-content": "npx tsx scripts/validate-content.ts"
+    "validate-content": "npx tsx scripts/validate-content.ts",
+    "apply-content-submission": "npx tsx scripts/apply-content-submission.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

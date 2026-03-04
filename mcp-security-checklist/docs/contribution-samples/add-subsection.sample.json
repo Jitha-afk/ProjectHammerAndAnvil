@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-subsection",
+  "change": {
+    "sectionId": "mcp-server",
+    "subsection": {
+      "id": "srv-example",
+      "number": "1.12",
+      "title": "Example Subsection",
+      "description": "Optional subsection description.",
+      "items": [
+        {
+          "id": "srv-example-001",
+          "title": "First Example Control",
+          "description": "Describe the control and intended security value.",
+          "priority": "RECOMMENDED",
+          "roles": [
+            "security-engineer"
+          ],
+          "tags": [
+            "mcp-security"
+          ],
+          "sources": [
+            {
+              "label": "OWASP Cheat Sheet for Third-Party MCP Servers v1.0"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

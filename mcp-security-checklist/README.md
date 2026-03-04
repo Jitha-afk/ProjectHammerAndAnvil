@@ -1,75 +1,53 @@
-# React + TypeScript + Vite
+# MCP Security Checklist
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive security checklist for Model Context Protocol deployments.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Content validation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run validate-content
 ```
+
+This validates `src/data/checklist.json` for schema shape, unique item IDs, and `totalItems` consistency.
+
+## Automated content submissions
+
+Checklist additions can be submitted via the GitHub issue template **Checklist Content Addition (JSON)**.
+
+Pipeline behavior:
+
+1. Parse JSON payload from issue body.
+2. Validate contribution schema.
+3. Apply changes to `src/data/checklist.json`.
+4. Run `npm run validate-content`.
+5. Open an automated PR for maintainer review.
+
+### Supported payload kinds
+
+- `add-section`
+- `add-subsection`
+- `add-item`
+
+Sample payloads:
+
+- `docs/contribution-samples/add-section.sample.json`
+- `docs/contribution-samples/add-subsection.sample.json`
+- `docs/contribution-samples/add-item.sample.json`
+
+## Local dry-run of an issue payload
+
+You can simulate the workflow by setting `ISSUE_BODY` and running:
+
+```bash
+npm run apply-content-submission
+npm run validate-content
+```
+
+See root `CONTRIBUTING.md` for full contribution rules.

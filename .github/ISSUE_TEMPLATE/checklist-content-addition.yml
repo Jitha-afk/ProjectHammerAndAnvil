@@ -1,0 +1,69 @@
+name: Checklist Content Addition (JSON)
+description: Submit structured JSON to add a section, subsection, or checklist item.
+title: "[content] "
+labels:
+  - content-submission
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use one of the sample payloads:
+        - `mcp-security-checklist/docs/contribution-samples/add-section.sample.json`
+        - `mcp-security-checklist/docs/contribution-samples/add-subsection.sample.json`
+        - `mcp-security-checklist/docs/contribution-samples/add-item.sample.json`
+
+        This issue will trigger automation that validates your JSON and opens a PR if valid.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Contribution kind
+      description: Select the type of content you are adding.
+      options:
+        - add-item
+        - add-subsection
+        - add-section
+    validations:
+      required: true
+  - type: textarea
+    id: submission-json
+    attributes:
+      label: Submission JSON
+      description: Paste valid JSON only (no comments).
+      placeholder: |
+        {
+          "schemaVersion": 1,
+          "kind": "add-item",
+          "change": {
+            "sectionId": "mcp-server",
+            "subsectionId": "srv-api",
+            "item": {
+              "id": "srv-api-999",
+              "title": "Example",
+              "description": "...",
+              "priority": "HIGH",
+              "roles": ["security-engineer"],
+              "tags": ["mcp-security"],
+              "sources": [{"label": "OWASP ..."}]
+            }
+          }
+        }
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Why this addition is needed and where it fits.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I confirmed IDs are unique and follow the expected format.
+          required: true
+        - label: I confirmed source references are included.
+          required: true
+        - label: I understand this creates a PR for review (not auto-merge).
+          required: true
