@@ -31,6 +31,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# mcp security checklist app build output
+mcp-security-checklist/dist/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
