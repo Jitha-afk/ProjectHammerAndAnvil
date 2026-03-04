@@ -539,6 +539,28 @@
                   "label": "OWASP Cheat Sheet for Third-Party MCP Servers v1.0"
                 }
               ]
+            },
+            {
+              "id": "srv-auth-901",
+              "title": "Sender-Constrained Access Tokens",
+              "description": "Use sender-constrained tokens (DPoP or mTLS token binding) for MCP calls so stolen bearer tokens cannot be replayed from unauthorized clients.",
+              "priority": "HIGH",
+              "roles": [
+                "security-engineer",
+                "developer"
+              ],
+              "tags": [
+                "authentication",
+                "zero-trust",
+                "token-security",
+                "priority-high"
+              ],
+              "sources": [
+                {
+                  "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+                  "url": "https://arxiv.org/abs/2504.08623v2"
+                }
+              ]
             }
           ],
           "description": "Authentication and authorization gate every request. Misconfigured identity controls create confused deputy vulnerabilities and unauthorized data access."
