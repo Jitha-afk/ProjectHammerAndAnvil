@@ -1,7 +1,6 @@
 import React from 'react';
 
-type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
-  as?: T;
+type StarBorderBaseProps = {
   className?: string;
   children?: React.ReactNode;
   color?: string;
@@ -9,27 +8,35 @@ type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutR
   thickness?: number;
 };
 
-const StarBorder = <T extends React.ElementType = 'button'>({
-  as,
+type StarBorderAnchorProps = StarBorderBaseProps &
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    as: 'a';
+  };
+
+type StarBorderButtonProps = StarBorderBaseProps &
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    as?: 'button';
+  };
+
+type StarBorderProps = StarBorderAnchorProps | StarBorderButtonProps;
+
+const StarBorder = ({
+  as = 'button',
   className = '',
   color = 'white',
   speed = '6s',
   thickness = 1,
   children,
   ...rest
-}: StarBorderProps<T>) => {
-  const Component = as || 'button';
+}: StarBorderProps) => {
   const { style, ...componentProps } = rest;
+  const componentStyle = {
+    padding: `${thickness}px 0`,
+    ...(style as React.CSSProperties)
+  };
 
-  return (
-    <Component
-      className={`relative inline-block overflow-hidden rounded-[20px] ${className}`}
-      {...componentProps}
-      style={{
-        padding: `${thickness}px 0`,
-        ...(style as React.CSSProperties)
-      }}
-    >
+  const content = (
+    <>
       <div
         className="absolute w-[300%] h-[50%] opacity-70 bottom-[-11px] right-[-250%] rounded-full animate-star-movement-bottom z-0"
         style={{
@@ -47,7 +54,30 @@ const StarBorder = <T extends React.ElementType = 'button'>({
       <div className="relative z-1 border border-sidebar-border bg-[linear-gradient(to_bottom,var(--sidebar),var(--background))] text-sidebar-foreground text-center text-[16px] py-[16px] px-[26px] rounded-[20px]">
         {children}
       </div>
-    </Component>
+    </>
+  );
+
+  if (as === 'a') {
+    return (
+      <a
+        className={`relative inline-block overflow-hidden rounded-[20px] ${className}`}
+        {...(componentProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        style={componentStyle}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <button
+      className={`relative inline-block overflow-hidden rounded-[20px] ${className}`}
+      {...(componentProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      style={componentStyle}
+      type={(componentProps as React.ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button'}
+    >
+      {content}
+    </button>
   );
 };
 
