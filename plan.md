@@ -530,6 +530,115 @@ Phase 3 (Export, Import & Polish)
 
 ---
 
+## Phase 4: UI Fixes & Data-Driven Architecture (March 4, 2026) ✓ COMPLETE
+
+**Goal:** Fix 5 UI/UX issues identified from comparing with designsystemchecklist.com reference. Make the content pipeline fully data-driven so contributors only need to edit JSON/markdown files, not frontend code.
+
+### 4.0 Key Decisions
+
+| Decision | Rationale |
+|---|---|
+| **Hash router, not react-router** | Lightweight, no dependency, works on GitHub Pages. Routes: `#/`, `#/about`, `#/share`. |
+| **About = separate route** | `#/about` renders an AboutPage component. Cleaner than a modal or scroll section. |
+| **Share = JSON export** | `#/share` page with a download button that exports current checklist progress as JSON. URL-based progress sharing deferred. |
+| **Contribute = external link** | Links to GitHub repo. No page needed. |
+| **Hero scrolls to selector** | Big hero with "Get started" CTA button that smooth-scrolls to the section selection list below. |
+| **Subsection descriptions in generator** | `docs/checklist.md` doesn't have per-subsection descriptions. Add a `subsectionDescriptions` map in the generator script that outputs to the JSON. Contributors can later move these to the markdown. |
+| **`meta` object in checklist.json** | All UI copy (hero title, subtitle, CTA text) lives in `checklist.json.meta` — zero hardcoded strings in components. |
+
+### 4.1 Data-Driven Architecture (Fix 5)
+
+**Enrich type definitions** — `src/types/index.ts`:
+- Add `description?: string` to `SubSection` interface
+- Add `whyItMatters?: string` to `Section` interface
+- Add `SiteMeta` interface with `heroTitle`, `heroSubtitle`, `ctaText`, `aboutContent`, etc.
+- Add `meta: SiteMeta` to `ChecklistData` interface
+
+**Update generator** — `scripts/generate-checklist-data.ts`:
+- Parse section blockquotes from `checklist.md` → `section.whyItMatters`
+- Add `subsectionDescriptions` map with short "why" blurbs for each subsection
+- Add `meta` object output with all UI copy strings
+- All hardcoded content moves from components into the JSON output
+
+**Regenerate** — `src/data/checklist.json`
+
+### 4.2 Section & Subsection Descriptions (Fix 4)
+
+**Content source:** Section descriptions come from `checklist.md` blockquotes. Subsection descriptions authored in the generator's `subsectionDescriptions` map.
+
+**Display:**
+- `SubSection.tsx` — Show `subSection.description` below sticky header
+- `CategoryView.tsx` — Show `section.whyItMatters` as a prominent callout
+- `Home.tsx` — Show section description in the section list items
+
+### 4.3 Top Navigation Bar (Fix 2)
+
+**New component:** `src/components/layout/TopNav.tsx`
+- Sticky top bar, always visible on all views
+- Left: Shield icon + "MCP Security Checklist" (links to `#/`)
+- Right: "About" (`#/about`), "Share" (`#/share`), "Contribute" (external GitHub link), dark mode toggle
+- Mobile: hamburger menu with slide-out drawer
+
+**Routing:** `src/lib/router.ts`
+- Custom hash router: `useState` + `hashchange` event listener
+- Routes: `#/` (home/checklist), `#/about`, `#/share`
+- `useHashRoute()` hook returns current route string
+
+**Pages:**
+- `src/components/pages/AboutPage.tsx` — Project description, sources, methodology
+- `src/components/pages/SharePage.tsx` — JSON export download button
+
+**App.tsx changes:**
+- Render `TopNav` always (above all views)
+- Route between Home/Checklist/About/Share based on hash
+- Simplify `Header.tsx` to section breadcrumb only (logo/dark mode move to TopNav)
+
+### 4.4 Hero Section Redesign (Fix 3)
+
+**File:** `src/components/layout/Home.tsx`
+- Large display heading from `checklistData.meta.heroTitle`
+- Subtitle from `checklistData.meta.heroSubtitle`
+- "Get started" CTA button (smooth-scrolls to section selector below)
+- More generous spacing — hero occupies significant viewport height
+- Visual separator between hero and section list
+
+### 4.5 Item Count Layout Fix (Fix 1)
+
+**File:** `src/components/layout/Home.tsx`
+- Move `doneCount/totalItems` below the section title row
+- Place it next to the progress bar (same row as progress bar)
+- Hover arrow and title occupy the top row exclusively — no overlap
+
+### 4.6 Files Changed
+
+| File | Action |
+|---|---|
+| `src/types/index.ts` | Edit — add `SiteMeta`, `whyItMatters`, subsection `description` |
+| `scripts/generate-checklist-data.ts` | Edit — enrich output JSON, add descriptions map, add meta |
+| `src/data/checklist.json` | Regenerated |
+| `src/lib/router.ts` | New — lightweight hash router hook |
+| `src/components/layout/TopNav.tsx` | New — persistent navigation bar |
+| `src/components/pages/AboutPage.tsx` | New — about page |
+| `src/components/pages/SharePage.tsx` | New — JSON export page |
+| `src/components/layout/Home.tsx` | Edit — hero redesign + item count layout fix |
+| `src/components/layout/Header.tsx` | Edit — simplify to section sub-header |
+| `src/components/checklist/SubSection.tsx` | Edit — show descriptions |
+| `src/components/layout/CategoryView.tsx` | Edit — show whyItMatters |
+| `src/App.tsx` | Edit — add routing, TopNav, route-based rendering |
+
+### 4.7 Verification
+
+1. `npm run build` — zero type errors ✓
+2. `npm run lint` — passes ✓
+3. Manual: TopNav visible on all views, hero has CTA that scrolls to selector
+4. Manual: Section/subsection descriptions visible in checklist view
+5. Manual: Item counts don't overlap hover arrows on Home
+6. Manual: `#/about` and `#/share` routes render correct pages
+7. Manual: JSON export downloads correct progress data
+8. Verify: `checklist.json` has `meta`, `whyItMatters`, subsection `description` fields ✓
+
+---
+
 ## Out of Scope (Deferred)
 
 - Unit tests and component tests (PRD 14c) — add as follow-up

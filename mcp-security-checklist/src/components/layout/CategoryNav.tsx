@@ -27,10 +27,10 @@ export function CategoryNav({
             onClick={() => onNavigate(previousSection.id)}
             type="button"
           >
-            <span className="text-sm text-[var(--foreground-muted)]">
+            <span className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
               Previous
             </span>
-            <span className="mt-1 block text-lg font-normal tracking-tight text-foreground transition-colors duration-150 group-hover:text-[var(--accent)] md:text-xl">
+            <span className="mt-1 block font-normal text-foreground transition-colors duration-150 group-hover:text-[var(--accent)]" style={{ fontSize: 'var(--font-size-subtitle)', lineHeight: 'var(--line-height-subtitle)' }}>
               {previousSection.number}. {previousSection.title}
             </span>
           </button>
@@ -40,10 +40,10 @@ export function CategoryNav({
             onClick={onBackToHome}
             type="button"
           >
-            <span className="text-sm text-[var(--foreground-muted)]">
+            <span className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
               Back
             </span>
-            <span className="mt-1 block text-lg font-normal tracking-tight text-foreground transition-colors duration-150 group-hover:text-[var(--accent)] md:text-xl">
+            <span className="mt-1 block font-normal text-foreground transition-colors duration-150 group-hover:text-[var(--accent)]" style={{ fontSize: 'var(--font-size-subtitle)', lineHeight: 'var(--line-height-subtitle)' }}>
               Home
             </span>
           </button>
@@ -58,10 +58,10 @@ export function CategoryNav({
             onClick={() => onNavigate(nextSection.id)}
             type="button"
           >
-            <span className="text-sm text-[var(--foreground-muted)]">
+            <span className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
               Next
             </span>
-            <span className="mt-1 block text-lg font-normal tracking-tight text-foreground transition-colors duration-150 group-hover:text-[var(--accent)] md:text-xl">
+            <span className="mt-1 block font-normal text-foreground transition-colors duration-150 group-hover:text-[var(--accent)]" style={{ fontSize: 'var(--font-size-subtitle)', lineHeight: 'var(--line-height-subtitle)' }}>
               {nextSection.number}. {nextSection.title}
             </span>
           </button>
@@ -71,10 +71,10 @@ export function CategoryNav({
             onClick={onBackToHome}
             type="button"
           >
-            <span className="text-sm text-[var(--foreground-muted)]">
+            <span className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
               Done
             </span>
-            <span className="mt-1 block text-lg font-normal tracking-tight text-foreground transition-colors duration-150 group-hover:text-[var(--accent)] md:text-xl">
+            <span className="mt-1 block font-normal text-foreground transition-colors duration-150 group-hover:text-[var(--accent)]" style={{ fontSize: 'var(--font-size-subtitle)', lineHeight: 'var(--line-height-subtitle)' }}>
               Back to Home
             </span>
           </button>

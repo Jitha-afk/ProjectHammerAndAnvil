@@ -181,7 +181,7 @@ export function Home({
         className="mx-auto max-w-[var(--page-width)] px-6 md:px-[var(--page-padding)]"
         id="section-selector"
       >
-        <div className="border-t border-[var(--border)] pt-16">
+        <div className="pt-16">
           <h2 className="font-normal uppercase text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
             Select security domains
           </h2>

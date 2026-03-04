@@ -29,6 +29,7 @@ export interface SubSection {
   id: string
   number: string
   title: string
+  description?: string
   items: ChecklistItem[]
 }
 
@@ -38,13 +39,23 @@ export interface Section {
   title: string
   icon: string
   description: string
+  whyItMatters?: string
   subsections: SubSection[]
+}
+
+export interface SiteMeta {
+  heroTitle: string
+  heroSubtitle: string
+  ctaText: string
+  siteTitle: string
+  siteDescription: string
 }
 
 export interface ChecklistData {
   version: string
   lastUpdated: string
   totalItems: number
+  meta: SiteMeta
   sections: Section[]
 }
 

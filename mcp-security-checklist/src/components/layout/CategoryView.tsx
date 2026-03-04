@@ -1,36 +1,28 @@
-import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
 import { SubSection } from '@/components/checklist/SubSection'
 import { CategoryNav } from '@/components/layout/CategoryNav'
 import { MilestoneStrip } from '@/components/progress/MilestoneStrip'
-import { Toolbar } from '@/components/toolbar/Toolbar'
 import { computeProgress, isDone } from '@/lib/progress'
-import type { ChecklistData, ItemState, Section } from '@/types'
+import type { ItemState, Section } from '@/types'
 
 interface CategoryViewProps {
-  checklistData: ChecklistData
   section: Section
   itemStates: Record<string, ItemState>
   selectedSections: Section[]
   onNavigate: (sectionId: string) => void
   onBackToHome: () => void
   onMilestoneReached: (message: string) => void
-  searchInputRef: RefObject<HTMLInputElement | null>
-  onResetRequested: () => void
   allSelectedItems: { id: string; priority: string }[]
 }
 
 export function CategoryView({
-  checklistData,
   section,
   itemStates,
   selectedSections,
   onNavigate,
   onBackToHome,
   onMilestoneReached,
-  searchInputRef,
-  onResetRequested,
   allSelectedItems,
 }: CategoryViewProps) {
   const sectionItems = useMemo(
@@ -44,17 +36,26 @@ export function CategoryView({
     <div className="animate-page-enter">
       {/* Section title */}
       <header className="mb-12">
-        <span className="text-sm text-[var(--foreground-muted)]">
+        <span className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
           Section {section.number}
         </span>
 
-        <h2 className="mt-2 text-3xl font-light leading-tight tracking-tight text-foreground md:text-[40px] md:leading-[52px]">
+        <h2 className="mt-2 font-light text-foreground" style={{ fontSize: 'var(--font-size-display)', lineHeight: 'var(--line-height-display)' }}>
           {section.title}
         </h2>
 
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--foreground-secondary)]">
+        <p className="mt-3 max-w-2xl text-[var(--foreground-secondary)]" style={{ fontSize: 'var(--font-size-title)', lineHeight: 'var(--line-height-title)' }}>
           {section.description}
         </p>
+
+        {/* Why it matters callout */}
+        {section.whyItMatters && (
+          <div className="mt-4 border-l-2 border-[var(--accent)] pl-4">
+            <p className="italic text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
+              {section.whyItMatters}
+            </p>
+          </div>
+        )}
 
         {/* Section progress */}
         <div className="mt-5 flex items-center gap-4">
@@ -66,24 +67,15 @@ export function CategoryView({
               style={{ width: `${sectionProgress ?? 0}%` }}
             />
           </div>
-          <span className={`text-sm tabular-nums ${
+          <span className={`tabular-nums ${
             sectionProgress === 100
-              ? 'font-medium text-[var(--progress-complete)]'
+              ? 'font-normal text-[var(--progress-complete)]'
               : 'text-[var(--foreground-muted)]'
-          }`}>
+          }`} style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
             {sectionProgress === 100 ? 'Completed' : `${doneCount}/${sectionItems.length}`}
           </span>
         </div>
       </header>
-
-      {/* Toolbar */}
-      <div className="mb-6">
-        <Toolbar
-          onResetRequested={onResetRequested}
-          searchInputRef={searchInputRef}
-          sections={checklistData.sections}
-        />
-      </div>
 
       {/* Milestones — scoped to ALL selected items across sections */}
       <div className="mb-10">

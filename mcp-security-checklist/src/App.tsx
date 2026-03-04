@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { AppSidebar } from '@/components/app-sidebar'
 import { CategoryView } from '@/components/layout/CategoryView'
 import { Footer } from '@/components/layout/Footer'
-import { Header } from '@/components/layout/Header'
 import { Home } from '@/components/layout/Home'
+import { TopNav } from '@/components/layout/TopNav'
+import { AboutPage } from '@/components/pages/AboutPage'
+import { SharePage } from '@/components/pages/SharePage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Modal } from '@/components/ui/Modal'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import { Toast } from '@/components/ui/Toast'
 import checklistData from '@/data/checklist.json'
 import { isDone } from '@/lib/progress'
+import { useHashRoute } from '@/lib/router'
 import { useChecklistStore } from '@/store/useChecklistStore'
 import type { ChecklistData } from '@/types'
 
@@ -19,6 +28,7 @@ const CORE_SECTION_IDS = typedChecklistData.sections
   .map((section) => section.id)
 
 function App() {
+  const { route, navigate } = useHashRoute()
   const [isEditingScope, setIsEditingScope] = useState(false)
   const [isResetModalOpen, setIsResetModalOpen] = useState(false)
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null)
@@ -38,8 +48,23 @@ function App() {
   const setSelectedSectionIds = useChecklistStore((state) => state.setSelectedSectionIds)
   const completeOnboarding = useChecklistStore((state) => state.completeOnboarding)
 
-  const showHome = !hasCompletedOnboarding || isEditingScope || selectedSectionIds.length === 0
-  const showChecklist = !showHome && activeSectionId !== null
+  const effectiveActiveSectionId = useMemo(() => {
+    if (activeSectionId !== null) {
+      return activeSectionId
+    }
+
+    if (route === '/checklist' && hasCompletedOnboarding && selectedSectionIds.length > 0) {
+      const firstSelected = typedChecklistData.sections.find(
+        (section) => selectedSectionIds.includes(section.id),
+      )
+      return firstSelected?.id ?? null
+    }
+
+    return null
+  }, [activeSectionId, route, hasCompletedOnboarding, selectedSectionIds])
+
+  const showHome = route === '/' || isEditingScope || !hasCompletedOnboarding || selectedSectionIds.length === 0
+  const showChecklist = !showHome && route === '/checklist' && effectiveActiveSectionId !== null
 
   const selectedSectionSet = useMemo(
     () => new Set(selectedSectionIds),
@@ -60,8 +85,8 @@ function App() {
   )
 
   const activeSection = useMemo(
-    () => typedChecklistData.sections.find((section) => section.id === activeSectionId) ?? null,
-    [activeSectionId],
+    () => typedChecklistData.sections.find((section) => section.id === effectiveActiveSectionId) ?? null,
+    [effectiveActiveSectionId],
   )
 
   const securedCount = useMemo(
@@ -91,7 +116,6 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [setExpandedItem, setSearch])
 
-  // Keyboard shortcuts for checklist view
   useEffect(() => {
     if (!showChecklist) {
       return
@@ -121,13 +145,13 @@ function App() {
         return
       }
 
-      // Navigate between sections with [ and ]
       if (event.key === '[' || event.key === ']') {
         event.preventDefault()
-        const currentIndex = selectedSections.findIndex((s) => s.id === activeSectionId)
+        const currentIndex = selectedSections.findIndex((section) => section.id === effectiveActiveSectionId)
         if (currentIndex === -1) {
           return
         }
+
         const direction = event.key === '[' ? -1 : 1
         const nextIndex = Math.min(selectedSections.length - 1, Math.max(0, currentIndex + direction))
         if (nextIndex !== currentIndex) {
@@ -138,7 +162,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showChecklist, activeSectionId, selectedSections, searchQuery, setExpandedItem, setSearch, handleNavigateSection])
+  }, [showChecklist, effectiveActiveSectionId, selectedSections, searchQuery, setExpandedItem, setSearch, handleNavigateSection])
 
   const handleToggleScopeSection = (sectionId: string) => {
     const nextSelection = selectedSectionIds.includes(sectionId)
@@ -159,25 +183,41 @@ function App() {
   const handleStartChecklist = () => {
     completeOnboarding(selectedSectionIds)
     setIsEditingScope(false)
-    // Navigate to first selected section
+
     if (selectedSectionIds.length > 0) {
       const firstSelected = typedChecklistData.sections.find(
         (section) => selectedSectionIds.includes(section.id),
       )
+
       if (firstSelected) {
         setActiveSectionId(firstSelected.id)
+        navigate('/checklist')
+        window.scrollTo({ top: 0 })
+        requestAnimationFrame(() => window.scrollTo({ top: 0 }))
       }
     }
+  }
+
+  const handleStartChecklistAtSection = (sectionId: string) => {
+    completeOnboarding(selectedSectionIds)
+    setIsEditingScope(false)
+    setActiveSectionId(sectionId)
+    navigate('/checklist')
+    window.scrollTo({ top: 0 })
+    requestAnimationFrame(() => window.scrollTo({ top: 0 }))
   }
 
   const handleEditScope = () => {
     setActiveSectionId(null)
     setIsEditingScope(true)
+    navigate('/')
+    window.scrollTo({ top: 0 })
   }
 
   const handleBackToHome = () => {
     setActiveSectionId(null)
-    setIsEditingScope(true)
+    navigate('/')
+    window.scrollTo({ top: 0 })
   }
 
   const handleResetConfirmed = () => {
@@ -186,64 +226,98 @@ function App() {
     setIsResetModalOpen(false)
   }
 
-  return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-[var(--background)] text-foreground">
-        {showHome ? (
-          <Home
-            checklistData={typedChecklistData}
-            itemStates={itemStates}
-            onClearSelection={handleClearScopeSelection}
-            onSelectAllCore={handleSelectAllCoreSections}
-            onStartChecklist={handleStartChecklist}
-            onToggleSection={handleToggleScopeSection}
-            selectedSectionIds={selectedSectionIds}
-          />
-        ) : (
-          <>
-            <Header
-              activeSectionTitle={activeSection?.title ?? null}
-              isDarkMode={isDarkMode}
-              onEditScope={handleEditScope}
-              onToggleDarkMode={toggleDarkMode}
-              securedCount={securedCount}
-              totalItems={selectedTotalItems}
+  const renderContent = () => {
+    if (route === '/about') {
+      return <AboutPage />
+    }
+
+    if (route === '/share') {
+      return <SharePage />
+    }
+
+    if (showHome) {
+      return (
+        <Home
+          checklistData={typedChecklistData}
+          hasCompletedOnboarding={hasCompletedOnboarding}
+          itemStates={itemStates}
+          onClearSelection={handleClearScopeSelection}
+          onNavigateSection={handleStartChecklistAtSection}
+          onSelectAllCore={handleSelectAllCoreSections}
+          onStartChecklist={handleStartChecklist}
+          onToggleSection={handleToggleScopeSection}
+          selectedSectionIds={selectedSectionIds}
+        />
+      )
+    }
+
+    return (
+      <>
+        {activeSection ? (
+          <SidebarProvider defaultOpen>
+            <AppSidebar
+              activeSectionId={activeSection.id}
+              onNavigate={handleNavigateSection}
+              onResetRequested={() => setIsResetModalOpen(true)}
+              searchInputRef={searchInputRef}
+              sections={selectedSections}
             />
 
-            {/* Single-column reading layout — no sidebar */}
-            <main className="mx-auto max-w-[var(--page-width)] px-6 pb-20 pt-8 md:px-[var(--page-padding)] md:pb-36">
-              {activeSection ? (
+            <SidebarInset className="bg-[var(--background)]">
+              <main className="mx-auto w-full max-w-[var(--page-width)] px-6 pb-20 pt-8 md:px-[var(--page-padding)] md:pb-36">
+                <div className="mb-4 md:hidden">
+                  <SidebarTrigger className="rounded-sm" />
+                </div>
+
                 <CategoryView
                   allSelectedItems={selectedItems}
-                  checklistData={typedChecklistData}
                   itemStates={itemStates}
                   onBackToHome={handleBackToHome}
                   onMilestoneReached={showToast}
                   onNavigate={handleNavigateSection}
-                  onResetRequested={() => setIsResetModalOpen(true)}
-                  searchInputRef={searchInputRef}
                   section={activeSection}
                   selectedSections={selectedSections}
                 />
-              ) : (
-                <div className="flex min-h-[50vh] items-center justify-center">
-                  <p className="text-sm text-[var(--foreground-muted)]">
-                    Select a section to begin.
-                  </p>
-                </div>
-              )}
-            </main>
-
-            <Modal
-              confirmLabel="Reset all"
-              description="This clears all item statuses and notes."
-              isOpen={isResetModalOpen}
-              onCancel={() => setIsResetModalOpen(false)}
-              onConfirm={handleResetConfirmed}
-              title="Reset checklist progress?"
-            />
-          </>
+              </main>
+            </SidebarInset>
+          </SidebarProvider>
+        ) : (
+          <main className="mx-auto max-w-[var(--page-width)] px-6 pb-20 pt-8 md:px-[var(--page-padding)] md:pb-36">
+            <div className="flex min-h-[50vh] items-center justify-center">
+              <p className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
+                Select a section to begin.
+              </p>
+            </div>
+          </main>
         )}
+
+        <Modal
+          confirmLabel="Reset all"
+          description="This clears all item statuses and notes."
+          isOpen={isResetModalOpen}
+          onCancel={() => setIsResetModalOpen(false)}
+          onConfirm={handleResetConfirmed}
+          title="Reset checklist progress?"
+        />
+      </>
+    )
+  }
+
+  return (
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[var(--background)] text-foreground">
+        <TopNav
+          checklistContext={showChecklist ? {
+            activeSectionTitle: activeSection?.title ?? null,
+            securedCount,
+            totalItems: selectedTotalItems,
+            onEditScope: handleEditScope,
+          } : undefined}
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={toggleDarkMode}
+        />
+
+        {renderContent()}
 
         <Footer lastSavedAt={latestSavedAt} version={checklistData.version} />
         <Toast message={toastMessage} onDismiss={() => showToast(null)} />

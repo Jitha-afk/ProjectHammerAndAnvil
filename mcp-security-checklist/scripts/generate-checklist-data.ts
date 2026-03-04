@@ -22,6 +22,7 @@ interface SubSection {
   id: string
   number: string
   title: string
+  description?: string
   items: ChecklistItem[]
 }
 
@@ -31,13 +32,23 @@ interface Section {
   title: string
   icon: string
   description: string
+  whyItMatters?: string
   subsections: SubSection[]
+}
+
+interface SiteMeta {
+  heroTitle: string
+  heroSubtitle: string
+  ctaText: string
+  siteTitle: string
+  siteDescription: string
 }
 
 interface ChecklistData {
   version: string
   lastUpdated: string
   totalItems: number
+  meta: SiteMeta
   sections: Section[]
 }
 
@@ -118,6 +129,56 @@ const subsectionPrefix = new Map<string, string>([
   ['6.4', 'redteam'],
   ['7.1', 'wallet'],
 ])
+
+const subsectionDescriptions = new Map<string, string>([
+  ['1.1', 'API endpoints are the primary interface between AI models and MCP servers. Weak validation here allows injection attacks, path traversal, and unauthorized access.'],
+  ['1.2', 'Authentication and authorization gate every request. Misconfigured identity controls create confused deputy vulnerabilities and unauthorized data access.'],
+  ['1.3', 'Tools are executable capabilities exposed to AI. Without integrity verification, attackers can modify tool behavior, descriptions, or permissions post-approval.'],
+  ['1.4', 'All data flowing through MCP must be validated and constrained. Uncontrolled inputs and outputs lead to injection, resource exhaustion, and context overflow.'],
+  ['1.5', 'Prompt injection is the most prevalent attack vector in AI systems. These controls prevent external data from hijacking agent goals or triggering unauthorized actions.'],
+  ['1.6', 'MCP servers depend on third-party packages and container images. Compromised dependencies introduce backdoors, credential theft, and supply chain attacks.'],
+  ['1.7', 'Runtime environment configuration determines the blast radius of any breach. Hardened containers, network segmentation, and secrets management limit attacker movement.'],
+  ['1.8', 'MCP plugins that persist after session end can maintain unauthorized access. Lifecycle controls ensure clean termination and prevent zombie processes.'],
+  ['1.9', 'Without comprehensive audit trails, security incidents cannot be detected, investigated, or attributed. Monitoring provides the evidence chain for incident response.'],
+  ['1.10', 'Data handled by MCP servers may include PII, credentials, and financial information. Encryption, minimization, and isolation prevent unauthorized exposure.'],
+  ['1.11', 'Resources exposed by MCP servers must be access-controlled and size-limited to prevent data exfiltration and abuse through unrestricted resource access.'],
+  ['2.1', 'Users are the final defense against malicious tool behavior. Full transparency into tool operations prevents hidden actions and social engineering attacks.'],
+  ['2.2', 'Client authentication establishes identity before any server communication. Without it, anonymous clients can access sensitive tools and data.'],
+  ['2.3', 'Clients must verify they are communicating with legitimate servers. Without verification, man-in-the-middle attacks and server impersonation go undetected.'],
+  ['2.4', 'Managing which tools and servers are active prevents exposure to malicious or outdated components. Version control and conflict resolution reduce attack surface.'],
+  ['2.5', 'Prompts are the control plane for AI behavior. Prompt injection, context contamination, and instruction override can redirect agent actions entirely.'],
+  ['2.6', 'Client-side logs capture the full picture of interactions that server logs may miss. They are essential for detecting compromised servers and anomalous patterns.'],
+  ['2.7', 'Stored tokens and credentials are high-value targets. Secure storage with scope limitation prevents token theft and privilege escalation.'],
+  ['2.8', 'Auto-approval bypasses human oversight. Without careful control, malicious tools can execute destructive actions without user awareness.'],
+  ['2.9', 'Sampling requests can leak sensitive context to models. Controlling what data enters sampling prevents unintended information disclosure.'],
+  ['3.1', 'Transport security is the foundation of all MCP communication. Unencrypted or weakly authenticated channels expose every message to interception and tampering.'],
+  ['3.2', 'Session isolation prevents cross-user data leakage. Without it, one user\'s data, tokens, and context can be accessed by another user or agent.'],
+  ['3.3', 'Multiple MCP servers in one environment create compound attack surfaces. A compromised server can cascade attacks to others through shared context or function calls.'],
+  ['4.1', 'Agent goal hijacking redirects autonomous systems to attacker-controlled objectives. Locked system prompts and validated inputs prevent goal drift and override.'],
+  ['4.2', 'Tools are the hands of the agent. Without least-privilege profiles and approval gates, a compromised agent can delete data, transfer funds, or exfiltrate secrets.'],
+  ['4.3', 'Agent identities control what each agent can access. Shared or inherited credentials allow privilege escalation and confused deputy attacks across agent hierarchies.'],
+  ['4.4', 'Agentic supply chains include tool libraries, model weights, and MCP packages. Unvetted components introduce backdoors and malicious behavior into agent workflows.'],
+  ['4.5', 'Agents may trigger code execution through tools or model outputs. Without sandboxing, this creates remote code execution vulnerabilities in the host environment.'],
+  ['4.6', 'Agent memory persists across interactions. Poisoned memory can alter future decisions, inject false context, and cascade misinformation through RAG pipelines.'],
+  ['4.7', 'Inter-agent messages can carry malicious payloads. Without authentication and schema validation, one compromised agent can subvert an entire multi-agent system.'],
+  ['4.8', 'Cascading failures amplify single-point compromises into system-wide outages. Circuit breakers and timeout policies contain blast radius and prevent runaway chains.'],
+  ['4.9', 'Agents can deceive human operators through misleading summaries or false confirmations. Validation checks ensure humans make informed approval decisions.'],
+  ['4.10', 'Rogue agents operate outside their defined policies. Behavioral monitoring and kill switches provide last-resort controls against misaligned autonomous behavior.'],
+  ['5.1', 'The LLM execution layer directly processes prompts and invokes tools. Without guardrails, malicious prompts can extract secrets, hijack priorities, or bypass filters.'],
+  ['6.1', 'Governance workflows ensure no tool or server goes live without security review. Without formal approval processes, untested components reach production.'],
+  ['6.2', 'Threat modeling identifies attack surfaces before they are exploited. An AI asset inventory provides the foundation for risk assessment and control prioritization.'],
+  ['6.3', 'Legal and regulatory requirements define minimum compliance thresholds. Incident response playbooks ensure rapid, coordinated responses to MCP-specific attacks.'],
+  ['6.4', 'Red teaming validates controls against realistic adversarial scenarios. Without it, theoretical protections may fail against actual attack techniques.'],
+  ['7.1', 'Cryptocurrency operations involve irreversible financial transactions. Enhanced security measures for private keys, transaction verification, and wallet isolation are critical.'],
+])
+
+const siteMeta: SiteMeta = {
+  heroTitle: 'Secure your MCP deployment',
+  heroSubtitle: 'An open-source security checklist for the AI tool ecosystem. Track your progress across 228 controls derived from OWASP, SlowMist, and recent academic research.',
+  ctaText: 'Get started',
+  siteTitle: 'MCP Security Checklist',
+  siteDescription: 'An interactive, open-source security checklist for Model Context Protocol deployments, covering server security, client security, agentic workflows, governance, and more.',
+}
 
 const rolePatterns: Array<{ role: string; regex: RegExp }> = [
   { role: 'compliance', regex: /compliance|regulatory|legal|gdpr|ccpa|governance|policy/i },
@@ -229,10 +290,12 @@ function buildChecklistData(markdown: string): ChecklistData {
   let currentSectionNumber: number | null = null
   let currentSubSection: SubSection | null = null
   const subsectionCounters = new Map<string, number>()
+  let pendingBlockquote: string | null = null
 
   const sectionRegex = /^##\s+(\d+)\.\s+(.+)$/
   const subsectionRegex = /^###\s+((\d+)\.(\d+))\s+(.+)$/
   const itemRegex = /^-\s+(🔴|🟡|🟢)\s+\*\*\[(CRITICAL|HIGH|RECOMMENDED)\]\s+(.+?):\*\*\s+(.+)$/
+  const blockquoteRegex = /^>\s+(.+)$/
 
   for (const line of lines) {
     const sectionMatch = line.match(sectionRegex)
@@ -255,7 +318,28 @@ function buildChecklistData(markdown: string): ChecklistData {
 
       currentSectionNumber = sectionNumber
       currentSubSection = null
+      pendingBlockquote = null
       continue
+    }
+
+    // Parse blockquotes after section headings (before any subsection)
+    if (currentSectionNumber !== null && currentSubSection === null) {
+      const blockquoteMatch = line.match(blockquoteRegex)
+      if (blockquoteMatch) {
+        const text = blockquoteMatch[1].trim()
+        if (pendingBlockquote) {
+          pendingBlockquote += ' ' + text
+        } else {
+          pendingBlockquote = text
+        }
+
+        const section = sections.get(currentSectionNumber)
+        if (section && pendingBlockquote) {
+          section.whyItMatters = pendingBlockquote
+        }
+
+        continue
+      }
     }
 
     const subsectionMatch = line.match(subsectionRegex)
@@ -279,6 +363,11 @@ function buildChecklistData(markdown: string): ChecklistData {
         number: subsectionNumber,
         title,
         items: [],
+      }
+
+      const subDescription = subsectionDescriptions.get(subsectionNumber)
+      if (subDescription) {
+        subsection.description = subDescription
       }
 
       section.subsections.push(subsection)
@@ -306,6 +395,11 @@ function buildChecklistData(markdown: string): ChecklistData {
           number: syntheticNumber,
           title: section.title,
           items: [],
+        }
+
+        const syntheticDescription = subsectionDescriptions.get(syntheticNumber)
+        if (syntheticDescription) {
+          currentSubSection.description = syntheticDescription
         }
 
         section.subsections.push(currentSubSection)
@@ -346,6 +440,7 @@ function buildChecklistData(markdown: string): ChecklistData {
     version: '2026.1',
     lastUpdated: '2026-03-03',
     totalItems,
+    meta: siteMeta,
     sections: orderedSections,
   }
 }

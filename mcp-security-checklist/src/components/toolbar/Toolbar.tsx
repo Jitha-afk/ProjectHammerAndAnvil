@@ -1,14 +1,15 @@
 import type { RefObject } from 'react'
+import { ChevronDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { useChecklistStore } from '@/store/useChecklistStore'
 import type { Role, Section } from '@/types'
 
@@ -27,6 +28,12 @@ const roleOptions: Array<{ value: Role | 'all'; label: string }> = [
   { value: 'compliance', label: 'Compliance' },
 ]
 
+const priorityOptions: Array<{ value: 'all' | 'CRITICAL' | 'HIGH+'; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'CRITICAL', label: 'CRITICAL Only' },
+  { value: 'HIGH+', label: 'HIGH+' },
+]
+
 export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarProps) {
   const priorityFilter = useChecklistStore((state) => state.priorityFilter)
   const roleFilter = useChecklistStore((state) => state.roleFilter)
@@ -40,8 +47,8 @@ export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarP
   const sectionIds = sections.map((section) => section.id)
 
   return (
-    <section className="space-y-3 rounded-md border border-border bg-card/40 p-3" aria-label="Checklist toolbar">
-      <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_180px_220px]">
+    <section className="space-y-3" aria-label="Checklist toolbar">
+      <div className="grid gap-2">
         <Input
           aria-label="Search checklist"
           className="min-h-11"
@@ -58,40 +65,60 @@ export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarP
           value={searchQuery}
         />
 
-        <Select
-          onValueChange={(value) => setPriorityFilter(value as 'all' | 'CRITICAL' | 'HIGH+')}
-          value={priorityFilter}
-        >
-          <SelectTrigger aria-label="Priority filter" className="min-h-11 w-full">
-            <SelectValue placeholder="Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="CRITICAL">CRITICAL Only</SelectItem>
-            <SelectItem value="HIGH+">HIGH+</SelectItem>
-          </SelectContent>
-        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label="Priority filter"
+              className="min-h-11 w-full justify-between"
+              variant="outline"
+            >
+              <span>{priorityOptions.find((option) => option.value === priorityFilter)?.label ?? 'All'}</span>
+              <ChevronDown className="size-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
+            <DropdownMenuRadioGroup
+              onValueChange={(value) => setPriorityFilter(value as 'all' | 'CRITICAL' | 'HIGH+')}
+              value={priorityFilter}
+            >
+              {priorityOptions.map((option) => (
+                <DropdownMenuRadioItem key={option.value} value={option.value}>
+                  {option.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <Select
-          onValueChange={(value) => setRoleFilter(value as Role | 'all')}
-          value={roleFilter}
-        >
-          <SelectTrigger aria-label="Role filter" className="min-h-11 w-full">
-            <SelectValue placeholder="Role" />
-          </SelectTrigger>
-          <SelectContent>
-            {roleOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label="Role filter"
+              className="min-h-11 w-full justify-between"
+              variant="outline"
+            >
+              <span>{roleOptions.find((option) => option.value === roleFilter)?.label ?? 'All Roles'}</span>
+              <ChevronDown className="size-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width)">
+            <DropdownMenuRadioGroup
+              onValueChange={(value) => setRoleFilter(value as Role | 'all')}
+              value={roleFilter}
+            >
+              {roleOptions.map((option) => (
+                <DropdownMenuRadioItem key={option.value} value={option.value}>
+                  {option.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid gap-2">
         <Button
-          className="min-h-11"
+          className="min-h-11 w-full"
           onClick={() => expandSections(sectionIds)}
           type="button"
           variant="outline"
@@ -99,7 +126,7 @@ export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarP
           Expand all
         </Button>
         <Button
-          className="min-h-11"
+          className="min-h-11 w-full"
           onClick={() => collapseSections(sectionIds)}
           type="button"
           variant="outline"
@@ -107,7 +134,7 @@ export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarP
           Collapse all
         </Button>
         <Button
-          className="min-h-11"
+          className="min-h-11 w-full"
           onClick={onResetRequested}
           type="button"
           variant="outline"

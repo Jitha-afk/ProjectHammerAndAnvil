@@ -72,12 +72,13 @@ export function ChecklistItem({
           <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
             <button
               className={cn(
-                'text-left text-lg font-normal leading-snug tracking-tight md:text-xl md:leading-7',
+                'text-left font-normal',
                 status === 'checked' && 'line-through text-[var(--foreground-muted)]',
                 status === 'na' && 'italic text-[var(--foreground-muted)]',
                 status === 'unchecked' && 'text-foreground',
               )}
               onClick={() => setExpandedItem(isExpanded ? null : item.id)}
+              style={{ fontSize: 'var(--font-size-subtitle)', lineHeight: 'var(--line-height-subtitle)' }}
               type="button"
             >
               {item.title}
@@ -87,14 +88,14 @@ export function ChecklistItem({
 
           {/* Expanded detail */}
           {isExpanded && (
-            <div className="mt-3 text-base leading-relaxed">
+            <div className="mt-3" style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
               <p className="text-[var(--foreground-secondary)]">
                 {item.description}
               </p>
 
-              <div className="mt-4 space-y-3 text-sm text-[var(--foreground-muted)]">
+              <div className="mt-4 space-y-3 text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
                 <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+                  <p className="mb-1 font-normal uppercase text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
                     Sources
                   </p>
                   <ul className="list-disc space-y-0.5 pl-5">
@@ -119,7 +120,7 @@ export function ChecklistItem({
 
                 {item.incidentRefs && item.incidentRefs.length > 0 && (
                   <div>
-                    <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+                    <p className="mb-1 font-normal uppercase text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
                       Incident refs
                     </p>
                     <p>{item.incidentRefs.join(', ')}</p>
@@ -127,7 +128,7 @@ export function ChecklistItem({
                 )}
 
                 <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+                  <p className="mb-1 font-normal uppercase text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
                     Tags
                   </p>
                   <p>{item.tags.join(', ')}</p>
@@ -135,16 +136,18 @@ export function ChecklistItem({
               </div>
 
               <label
-                className="mt-4 block text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]"
+                className="mt-4 block font-normal uppercase text-[var(--foreground-muted)]"
                 htmlFor={`note-${item.id}`}
+                style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}
               >
                 Notes
               </label>
               <textarea
-                className="mt-1.5 min-h-20 w-full rounded-[var(--border-radius)] border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm leading-relaxed placeholder:text-[var(--foreground-muted)]/60 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+                className="mt-1.5 min-h-20 w-full rounded-[var(--border-radius)] border border-[var(--border)] bg-[var(--background)] px-3 py-2 placeholder:text-[var(--foreground-muted)]/60 focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
                 id={`note-${item.id}`}
                 onChange={(event) => setNote(item.id, event.target.value)}
                 placeholder="Add context, decision notes, or remediation details..."
+                style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}
                 value={note}
               />
             </div>

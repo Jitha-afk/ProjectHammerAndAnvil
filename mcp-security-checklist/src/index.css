@@ -77,6 +77,25 @@
   --page-width: 720px;
   --page-padding: 48px;
   --border-radius: 2px;
+
+  /* Typography scale (desktop) — mirrors designsystemchecklist.com */
+  --font-size-overline: 14px;
+  --line-height-overline: 20px;
+  --font-size-body: 16px;
+  --line-height-body: 24px;
+  --font-size-subtitle: 20px;
+  --line-height-subtitle: 28px;
+  --font-size-title: 24px;
+  --line-height-title: 32px;
+  --font-size-display: 48px;
+  --line-height-display: 64px;
+  --font-weight-light: 300;
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /* ── Theme: Dark Mode ───────────────────────────────────── */
@@ -121,6 +140,28 @@
   --milestone-baseline: oklch(0.65 0.12 195);
   --milestone-hardened: oklch(0.68 0.14 280);
   --milestone-comprehensive: oklch(0.68 0.14 155);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/* ── Typography: Mobile Overrides ────────────────────────── */
+@media (max-width: 640px) {
+  :root {
+    --font-size-overline: 12px;
+    --line-height-overline: 18px;
+    --font-size-body: 14px;
+    --line-height-body: 20px;
+    --font-size-subtitle: 18px;
+    --line-height-subtitle: 26px;
+    --font-size-title: 20px;
+    --line-height-title: 28px;
+    --font-size-display: 36px;
+    --line-height-display: 42px;
+  }
 }
 
 /* ── Base Styles ────────────────────────────────────────── */
@@ -131,27 +172,22 @@
 
   body {
     font-family: var(--font-sans);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
     background-color: var(--background);
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
   }
 
-  /* Typography — tighter tracking on headings, relaxed on body */
-  h1, h2, h3 {
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-  }
-
-  h4, h5, h6 {
-    letter-spacing: -0.015em;
-    line-height: 1.35;
+  /* Typography — minimal tracking, hierarchy via size not weight */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: 0;
+    line-height: 1.33;
   }
 
   p {
-    line-height: 1.65;
+    line-height: var(--line-height-body);
   }
 
   code, pre, kbd {
@@ -236,4 +272,15 @@
 
 @utility animate-page-enter {
   animation: page-enter 0.4s ease-out both;
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }

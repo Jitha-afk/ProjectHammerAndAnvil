@@ -45,19 +45,26 @@ export function SubSection({ subSection, itemStates }: SubSectionProps) {
   return (
     <section id={`subsection-${subSection.id}`}>
       {/* Sticky section title — like the reference site */}
-      <header className="sticky top-14 z-10 -mx-6 bg-[var(--background)] px-6 py-4 md:-mx-[var(--page-padding)] md:px-[var(--page-padding)]">
+      <header className="sticky top-[6.5rem] z-10 -mx-6 bg-[var(--background)]/95 px-6 py-4 backdrop-blur-sm md:-mx-[var(--page-padding)] md:px-[var(--page-padding)]">
         <div className="flex items-baseline justify-between gap-4">
-          <h3 className="text-lg font-normal tracking-tight text-foreground md:text-xl">
+          <h3 className="font-normal text-foreground" style={{ fontSize: 'var(--font-size-title)', lineHeight: 'var(--line-height-title)' }}>
             {subSection.number} {subSection.title}
           </h3>
-          <span className={`shrink-0 text-sm tabular-nums ${
+          <span className={`shrink-0 tabular-nums ${
             progress === 100
-              ? 'font-medium text-[var(--progress-complete)]'
+              ? 'font-normal text-[var(--progress-complete)]'
               : 'text-[var(--foreground-muted)]'
-          }`}>
+          }`} style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
             {progress === 100 ? 'Completed' : `${totalItems} controls`}
           </span>
         </div>
+
+        {/* Subsection description */}
+        {subSection.description && (
+          <p className="mt-1.5 max-w-2xl text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)' }}>
+            {subSection.description}
+          </p>
+        )}
 
         {/* Thin progress bar */}
         <div className="mt-2 h-[3px] w-full overflow-hidden rounded-[1px] bg-[var(--progress-track)]">
