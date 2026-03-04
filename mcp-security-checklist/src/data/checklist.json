@@ -3,8 +3,8 @@
   "lastUpdated": "2026-03-04",
   "totalItems": 234,
   "meta": {
-    "heroTitle": "Secure your MCP deployment",
-    "heroSubtitle": "An open-source security checklist for the AI tool ecosystem. Track your progress across 228 controls derived from OWASP, SlowMist, and recent academic research.",
+    "heroTitle": "Security shouldn't slow you down.",
+    "heroSubtitle": "An open-source checklist to help you track, plan, and grow your AI ecosystem. Derived from OWASP and recent academic research.",
     "ctaText": "Get started",
     "siteTitle": "MCP Security Checklist",
     "siteDescription": "An interactive, open-source security checklist for Model Context Protocol deployments, covering server security, client security, agentic workflows, governance, and more."
