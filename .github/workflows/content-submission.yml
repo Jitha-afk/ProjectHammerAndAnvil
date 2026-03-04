@@ -2,7 +2,7 @@ name: Process Checklist Content Submissions
 
 on:
   issues:
-    types: [opened, edited, reopened]
+    types: [opened, edited, reopened, labeled]
 
 permissions:
   contents: write
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   process-submission:
-    if: contains(join(github.event.issue.labels.*.name, ','), 'content-submission')
+    if: contains(github.event.issue.labels.*.name, 'content-submission')
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +44,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.CONTENT_SUBMISSION_PAT || github.token }}
           branch: automation/content-submission-${{ github.event.issue.number }}
           commit-message: "chore(content): apply submission #${{ github.event.issue.number }}"
           title: "chore(content): apply submission #${{ github.event.issue.number }}"

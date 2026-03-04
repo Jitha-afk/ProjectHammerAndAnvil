@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-item",
+  "change": {
+    "sectionId": "mcp-server",
+    "subsectionId": "srv-data",
+    "item": {
+      "id": "srv-data-901",
+      "title": "Input Normalization and Semantic Cross-Field Validation",
+      "description": "Normalize input values (for example Unicode canonicalization and case normalization) before validation, then enforce semantic and cross-field consistency checks to block evasion payloads that pass structural schema checks.",
+      "priority": "HIGH",
+      "roles": [
+        "developer",
+        "security-engineer"
+      ],
+      "tags": [
+        "input-validation",
+        "data-security",
+        "priority-high"
+      ],
+      "sources": [
+        {
+          "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+          "url": "https://arxiv.org/abs/2504.08623v2"
+        }
+      ]
+    }
+  }
+}

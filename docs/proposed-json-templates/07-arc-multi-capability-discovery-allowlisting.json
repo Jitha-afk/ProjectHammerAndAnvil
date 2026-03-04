@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-item",
+  "change": {
+    "sectionId": "architecture",
+    "subsectionId": "arc-multi",
+    "item": {
+      "id": "arc-multi-901",
+      "title": "Capability Discovery Allowlisting",
+      "description": "Restrict capability discovery so clients can enumerate and invoke tools only from explicitly approved MCP servers and namespaces, preventing cross-server spoofing and unauthorized capability expansion.",
+      "priority": "HIGH",
+      "roles": [
+        "architect",
+        "security-engineer",
+        "developer"
+      ],
+      "tags": [
+        "multi-mcp",
+        "authorization",
+        "tool-security",
+        "priority-high"
+      ],
+      "sources": [
+        {
+          "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+          "url": "https://arxiv.org/abs/2504.08623v2"
+        }
+      ]
+    }
+  }
+}

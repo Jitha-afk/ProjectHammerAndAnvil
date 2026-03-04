@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-item",
+  "change": {
+    "sectionId": "mcp-server",
+    "subsectionId": "srv-api",
+    "item": {
+      "id": "srv-api-901",
+      "title": "Recursive Validation and Unknown-Field Rejection",
+      "description": "Validate nested payload structures recursively and reject unknown fields by default to prevent parameter smuggling, schema pollution, and parser confusion attacks.",
+      "priority": "CRITICAL",
+      "roles": [
+        "developer",
+        "security-engineer"
+      ],
+      "tags": [
+        "input-validation",
+        "schema-validation",
+        "priority-critical"
+      ],
+      "sources": [
+        {
+          "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+          "url": "https://arxiv.org/abs/2504.08623v2"
+        }
+      ]
+    }
+  }
+}
