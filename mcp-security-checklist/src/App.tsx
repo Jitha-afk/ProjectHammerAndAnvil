@@ -5,6 +5,7 @@ import { CategoryView } from '@/components/layout/CategoryView'
 import { Home } from '@/components/layout/Home'
 import { TopNav } from '@/components/layout/TopNav'
 import { AboutPage } from '@/components/pages/AboutPage'
+import { NotFoundPage } from '@/components/pages/NotFoundPage'
 import { SharePage } from '@/components/pages/SharePage'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Modal } from '@/components/ui/Modal'
@@ -236,6 +237,10 @@ function App() {
   }
 
   const renderContent = () => {
+    if (route === '/not-found') {
+      return <NotFoundPage />
+    }
+
     if (route === '/about') {
       return <AboutPage />
     }
