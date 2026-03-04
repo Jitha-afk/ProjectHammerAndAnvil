@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  base: '/mcp-security-checklist/',
+  base: '/ProjectHammerAndAnvil/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
