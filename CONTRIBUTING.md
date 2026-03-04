@@ -5,7 +5,7 @@ Thanks for helping improve the MCP Security Checklist.
 ## Contribution paths
 
 - **Code/UI changes:** Open a PR against this repository.
-- **Checklist content additions:** Use the **“Checklist Content Addition (JSON)”** GitHub issue template.
+- **Checklist content additions:** Use the **“Checklist Content Addition (JSON)”** GitHub issue template: https://github.com/Jitha-afk/ProjectHammerAndAnvil/issues/new?template=checklist-content-addition.yml
 
 ## Checklist content additions (JSON)
 

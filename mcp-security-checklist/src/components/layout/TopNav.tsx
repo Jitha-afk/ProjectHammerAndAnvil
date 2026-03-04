@@ -66,7 +66,7 @@ export function TopNav({ checklistContext }: TopNavProps) {
             </Button>
             <Button asChild className={`h-9 rounded-sm px-3 font-normal ${navButtonHoverClass}`} variant="ghost">
               <a
-                href="https://github.com/jitesh-a/mcp-security-checklist"
+                href="https://github.com/Jitha-afk/ProjectHammerAndAnvil/blob/main/CONTRIBUTING.md"
                 rel="noreferrer"
                 target="_blank"
               >
@@ -127,7 +127,7 @@ export function TopNav({ checklistContext }: TopNavProps) {
             </a>
             <a
               className={`rounded-sm border border-transparent px-3 py-2 text-foreground transition-colors hover:border-border hover:bg-transparent hover:text-foreground`}
-              href="https://github.com/jitesh-a/mcp-security-checklist"
+              href="https://github.com/Jitha-afk/ProjectHammerAndAnvil/blob/main/CONTRIBUTING.md"
               onClick={() => setIsMobileMenuOpen(false)}
               rel="noreferrer"
               style={{ fontSize: 'var(--font-size-title)', lineHeight: 'var(--line-height-title)' }}
