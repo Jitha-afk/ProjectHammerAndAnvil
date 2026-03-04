@@ -9,6 +9,12 @@ permissions:
   pull-requests: write
   issues: write
 
+# Serialize runs so each submission sees the most-recent checklist.json.
+# cancel-in-progress: false ensures queued submissions are not silently dropped.
+concurrency:
+  group: content-submission
+  cancel-in-progress: false
+
 jobs:
   process-submission:
     if: contains(github.event.issue.labels.*.name, 'content-submission')
