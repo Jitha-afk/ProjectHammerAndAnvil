@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
+import DecryptedText from '@/components/DecryptedText'
 import { Button } from '@/components/ui/button'
 import { computeProgress } from '@/lib/progress'
 import { isDone } from '@/lib/progress'
@@ -151,11 +152,27 @@ export function Home({
         {/* Hero content */}
         <div className="relative z-10 flex h-full w-full flex-col justify-end px-6 pb-16 md:px-[var(--page-padding)] md:pb-20">
           <h1 className="text-balance font-light text-foreground" style={{ fontSize: 'var(--font-size-display)', lineHeight: 'var(--line-height-display)' }}>
-            {checklistData.meta.heroTitle}
+            <DecryptedText
+              text={checklistData.meta.heroTitle}
+              animateOn="both"
+              sequential
+              speed={35}
+              maxIterations={20}
+              className="text-foreground"
+              encryptedClassName="text-[var(--foreground-muted)]"
+            />
           </h1>
 
           <p className="mt-6 max-w-xl text-[var(--foreground-secondary)]" style={{ fontSize: 'var(--font-size-title)', lineHeight: 'var(--line-height-title)' }}>
-            {checklistData.meta.heroSubtitle}
+            <DecryptedText
+              text={checklistData.meta.heroSubtitle}
+              animateOn="both"
+              sequential
+              speed={25}
+              maxIterations={16}
+              className="text-[var(--foreground-secondary)]"
+              encryptedClassName="text-[var(--foreground-muted)]"
+            />
           </p>
 
           <div className="mt-10 flex items-center gap-4">
