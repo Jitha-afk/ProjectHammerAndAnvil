@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An interactive 228-item security checklist for Model Context Protocol deployments. Track your MCP security posture across servers, clients, architecture, and agentic workflows." />
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://storage.googleapis.com https://assets.unicorn.studio; font-src 'self' https://assets.unicorn.studio; connect-src 'self' https://assets.unicorn.studio https://storage.googleapis.com;" />
+    <title>MCP Security Checklist</title>
+    <link rel="icon" type="image/svg+xml" href="/mcp-security-checklist/favicon.svg" />
+    <script>
+      (function() {
+        try {
+          var stored = JSON.parse(localStorage.getItem('mcp-checklist-v1'));
+          if (stored && stored.state && stored.state.isDarkMode) {
+            document.documentElement.classList.add('dark');
+          } else if (!stored && matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="/mcp-security-checklist/assets/index-CNXkhLGx.js"></script>
+    <link rel="modulepreload" crossorigin href="/mcp-security-checklist/assets/checklist-data-C3-f0z32.js">
+    <link rel="stylesheet" crossorigin href="/mcp-security-checklist/assets/index-DsIU1Ssd.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
