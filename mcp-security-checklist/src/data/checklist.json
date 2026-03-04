@@ -4164,6 +4164,29 @@
                   "label": "OWASP Cheat Sheet for Third-Party MCP Servers v1.0"
                 }
               ]
+            },
+            {
+              "id": "arc-multi-901",
+              "title": "Capability Discovery Allowlisting",
+              "description": "Restrict capability discovery so clients can enumerate and invoke tools only from explicitly approved MCP servers and namespaces, preventing cross-server spoofing and unauthorized capability expansion.",
+              "priority": "HIGH",
+              "roles": [
+                "architect",
+                "security-engineer",
+                "developer"
+              ],
+              "tags": [
+                "multi-mcp",
+                "authorization",
+                "tool-security",
+                "priority-high"
+              ],
+              "sources": [
+                {
+                  "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+                  "url": "https://arxiv.org/abs/2504.08623v2"
+                }
+              ]
             }
           ],
           "description": "Multiple MCP servers in one environment create compound attack surfaces. A compromised server can cascade attacks to others through shared context or function calls."
