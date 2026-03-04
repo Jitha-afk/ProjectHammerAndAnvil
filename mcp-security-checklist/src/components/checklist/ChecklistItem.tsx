@@ -47,7 +47,7 @@ export function ChecklistItem({
             status === 'checked'
               ? 'border-[var(--accent)] bg-[var(--accent)]'
               : status === 'na'
-                ? 'border-[var(--border-hover)] bg-[var(--background-tertiary)]'
+                ? 'border-[var(--border-hover)] bg-[#171716]'
                 : 'border-[var(--border-hover)] bg-transparent',
             shouldPulse && 'animate-pulse',
           )}

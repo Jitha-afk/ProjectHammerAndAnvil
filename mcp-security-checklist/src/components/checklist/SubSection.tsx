@@ -45,7 +45,7 @@ export function SubSection({ subSection, itemStates }: SubSectionProps) {
   return (
     <section id={`subsection-${subSection.id}`}>
       {/* Sticky section title — like the reference site */}
-      <header className="sticky top-[6.5rem] z-10 -mx-6 bg-[var(--background)]/95 px-6 py-4 backdrop-blur-sm md:-mx-[var(--page-padding)] md:px-[var(--page-padding)]">
+      <header className="sticky top-14 z-10 -mx-6 bg-[var(--background)]/95 px-6 py-4 backdrop-blur-sm md:-mx-[var(--page-padding)] md:px-[var(--page-padding)]">
         <div className="flex items-baseline justify-between gap-4">
           <h3 className="font-normal text-foreground" style={{ fontSize: 'var(--font-size-title)', lineHeight: 'var(--line-height-title)' }}>
             {subSection.number} {subSection.title}

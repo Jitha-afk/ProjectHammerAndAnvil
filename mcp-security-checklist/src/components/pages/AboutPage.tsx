@@ -8,7 +8,7 @@ export function AboutPage() {
       <div className="mx-auto max-w-[var(--page-width)] px-6 py-16 md:px-[var(--page-padding)] md:py-24">
         <Button
           asChild
-          className="mb-8 h-9 rounded-sm px-3 font-normal"
+          className="mb-8 h-9 rounded-sm border border-transparent bg-transparent px-3 font-normal text-foreground hover:border-border hover:bg-transparent hover:text-foreground dark:hover:bg-transparent dark:hover:text-foreground"
           variant="ghost"
         >
           <a href="#/">

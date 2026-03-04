@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Github, Info, Share2, Shield } from 'lucide-react'
+import { Github, Info, Share2 } from 'lucide-react'
 
 import {
   Sidebar,
@@ -35,21 +35,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" variant="floating" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground" size="lg">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Shield className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Checklist</span>
-                <span className="truncate text-xs text-sidebar-foreground/70">{sections.length} selected sections</span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+      <SidebarHeader />
 
       <SidebarContent>
         <SidebarGroup>

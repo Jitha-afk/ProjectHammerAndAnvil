@@ -31,11 +31,10 @@ function App() {
   const [isEditingScope, setIsEditingScope] = useState(false)
   const [isResetModalOpen, setIsResetModalOpen] = useState(false)
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null)
+  const [isHomeTopNavVisible, setIsHomeTopNavVisible] = useState(false)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
 
   const itemStates = useChecklistStore((state) => state.itemStates)
-  const isDarkMode = useChecklistStore((state) => state.isDarkMode)
-  const toggleDarkMode = useChecklistStore((state) => state.toggleDarkMode)
   const resetAll = useChecklistStore((state) => state.resetAll)
   const setExpandedItem = useChecklistStore((state) => state.setExpandedItem)
   const setSearch = useChecklistStore((state) => state.setSearch)
@@ -96,8 +95,29 @@ function App() {
   const selectedTotalItems = selectedItems.length
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode)
-  }, [isDarkMode])
+    document.documentElement.classList.add('dark')
+  }, [])
+
+  useEffect(() => {
+    if (route !== '/') {
+      setIsHomeTopNavVisible(true)
+      return
+    }
+
+    const updateTopNavVisibility = () => {
+      const threshold = Math.max(120, window.innerHeight - 120)
+      setIsHomeTopNavVisible(window.scrollY >= threshold)
+    }
+
+    updateTopNavVisibility()
+    window.addEventListener('scroll', updateTopNavVisibility, { passive: true })
+    window.addEventListener('resize', updateTopNavVisibility)
+
+    return () => {
+      window.removeEventListener('scroll', updateTopNavVisibility)
+      window.removeEventListener('resize', updateTopNavVisibility)
+    }
+  }, [route])
 
   const handleNavigateSection = useCallback((sectionId: string) => {
     setActiveSectionId(sectionId)
@@ -293,19 +313,21 @@ function App() {
     )
   }
 
+  const showTopNav = route !== '/' || isHomeTopNavVisible
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-[var(--background)] text-foreground">
-        <TopNav
-          checklistContext={showChecklist ? {
-            activeSectionTitle: activeSection?.title ?? null,
-            securedCount,
-            totalItems: selectedTotalItems,
-            onEditScope: handleEditScope,
-          } : undefined}
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={toggleDarkMode}
-        />
+        {showTopNav ? (
+          <TopNav
+            checklistContext={showChecklist ? {
+              activeSectionTitle: activeSection?.title ?? null,
+              securedCount,
+              totalItems: selectedTotalItems,
+              onEditScope: handleEditScope,
+            } : undefined}
+          />
+        ) : null}
 
         {renderContent()}
         <Toast message={toastMessage} onDismiss={() => showToast(null)} />

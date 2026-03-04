@@ -45,7 +45,7 @@ export function SharePage() {
       <div className="mx-auto max-w-[var(--page-width)] px-6 py-16 md:px-[var(--page-padding)] md:py-24">
         <Button
           asChild
-          className="mb-8 h-9 rounded-sm px-3 font-normal"
+          className="mb-8 h-9 rounded-sm border border-transparent bg-transparent px-3 font-normal text-foreground hover:border-border hover:bg-transparent hover:text-foreground dark:hover:bg-transparent dark:hover:text-foreground"
           variant="ghost"
         >
           <a href="#/">
@@ -64,7 +64,7 @@ export function SharePage() {
         </p>
 
         {/* Progress summary */}
-        <div className="mt-8 rounded-sm border border-[var(--border)] bg-[var(--background-secondary)] p-6">
+        <div className="mt-8 rounded-sm border border-[var(--border)] bg-[var(--sidebar)] p-6">
           <h2 className="font-normal uppercase text-[var(--foreground-muted)]" style={{ fontSize: 'var(--font-size-overline)', lineHeight: 'var(--line-height-overline)' }}>
             Current progress
           </h2>
