@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -6,6 +6,8 @@ import { z } from 'zod'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+const fixMode = process.argv.includes('--fix')
 
 const roleSchema = z.enum([
   'security-engineer',
@@ -57,7 +59,7 @@ const checklistDataSchema = z.object({
 async function loadChecklistData() {
   const dataPath = path.resolve(__dirname, '../src/data/checklist.json')
   const rawJson = await readFile(dataPath, 'utf-8')
-  return JSON.parse(rawJson)
+  return { dataPath, data: JSON.parse(rawJson) }
 }
 
 function ensureUniqueIds(ids: string[]) {
@@ -79,7 +81,8 @@ function ensureUniqueIds(ids: string[]) {
 }
 
 async function main() {
-  const parsed = checklistDataSchema.parse(await loadChecklistData())
+  const { dataPath, data } = await loadChecklistData()
+  const parsed = checklistDataSchema.parse(data)
 
   const nonReferenceSections = parsed.sections.filter(
     (section) => section.id !== 'tools',
@@ -92,9 +95,17 @@ async function main() {
   const actualTotal = allItems.length
 
   if (parsed.totalItems !== actualTotal) {
-    throw new Error(
-      `totalItems (${parsed.totalItems}) does not match actual item count (${actualTotal})`,
-    )
+    if (fixMode) {
+      data.totalItems = actualTotal
+      await writeFile(dataPath, `${JSON.stringify(data, null, 2)}\n`, 'utf-8')
+      console.log(
+        `🔧 Auto-fixed totalItems: ${parsed.totalItems} → ${actualTotal}`,
+      )
+    } else {
+      throw new Error(
+        `totalItems (${parsed.totalItems}) does not match actual item count (${actualTotal})`,
+      )
+    }
   }
 
   ensureUniqueIds(allItems.map((item) => item.id))
