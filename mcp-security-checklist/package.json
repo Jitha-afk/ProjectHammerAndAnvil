@@ -12,6 +12,7 @@
     "apply-content-submission": "npx tsx scripts/apply-content-submission.ts"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.5.0",
     "@tailwindcss/vite": "^4.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -21,6 +22,7 @@
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "three": "^0.167.1",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "@types/node": "^24.11.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.183.1",
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
