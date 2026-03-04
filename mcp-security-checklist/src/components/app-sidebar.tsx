@@ -169,7 +169,7 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Contribute">
                 <a
-                  href="https://github.com/jitesh-a/mcp-security-checklist"
+                  href="https://github.com/Jitha-afk/ProjectHammerAndAnvil/blob/main/CONTRIBUTING.md"
                   rel="noreferrer"
                   target="_blank"
                 >

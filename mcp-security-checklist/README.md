@@ -19,7 +19,9 @@ This validates `src/data/checklist.json` for schema shape, unique item IDs, and 
 
 ## Automated content submissions
 
-Checklist additions can be submitted via the GitHub issue template **Checklist Content Addition (JSON)**.
+Checklist additions can be submitted via the GitHub issue template **Checklist Content Addition (JSON)**:
+
+https://github.com/Jitha-afk/ProjectHammerAndAnvil/issues/new?template=checklist-content-addition.yml
 
 Pipeline behavior:
 
