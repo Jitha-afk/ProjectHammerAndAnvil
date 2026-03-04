@@ -2163,6 +2163,29 @@
                   "label": "OWASP Cheat Sheet for Third-Party MCP Servers v1.0"
                 }
               ]
+            },
+            {
+              "id": "srv-monitor-901",
+              "title": "End-to-End Request Tracing Across Tool Chains",
+              "description": "Implement distributed tracing across authentication, policy checks, MCP calls, and downstream tool invocations so each high-risk action has a complete lineage for detection, forensics, and incident response.",
+              "priority": "HIGH",
+              "roles": [
+                "security-engineer",
+                "devops",
+                "architect"
+              ],
+              "tags": [
+                "monitoring",
+                "audit-logging",
+                "incident-response",
+                "priority-high"
+              ],
+              "sources": [
+                {
+                  "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+                  "url": "https://arxiv.org/abs/2504.08623v2"
+                }
+              ]
             }
           ],
           "description": "Without comprehensive audit trails, security incidents cannot be detected, investigated, or attributed. Monitoring provides the evidence chain for incident response."
