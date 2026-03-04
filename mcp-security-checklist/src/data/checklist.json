@@ -2699,6 +2699,29 @@
                   "label": "OWASP Cheat Sheet for Third-Party MCP Servers v1.0"
                 }
               ]
+            },
+            {
+              "id": "cli-auth-901",
+              "title": "Risk-Based Step-Up Authentication with Live Revocation",
+              "description": "Continuously reassess risk during active sessions and require step-up authentication for sensitive tool actions, with immediate revocation of temporary grants when risk posture changes.",
+              "priority": "HIGH",
+              "roles": [
+                "security-engineer",
+                "architect",
+                "developer"
+              ],
+              "tags": [
+                "authentication",
+                "zero-trust",
+                "client-security",
+                "priority-high"
+              ],
+              "sources": [
+                {
+                  "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+                  "url": "https://arxiv.org/abs/2504.08623v2"
+                }
+              ]
             }
           ],
           "description": "Client authentication establishes identity before any server communication. Without it, anonymous clients can access sensitive tools and data."
