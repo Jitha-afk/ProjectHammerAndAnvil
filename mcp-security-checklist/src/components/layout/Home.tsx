@@ -160,10 +160,11 @@ export function Home({
 
           <div className="mt-10 flex items-center gap-4">
             <Button
-              className="rounded-sm px-10 font-normal"
+              className="rounded-sm border border-transparent bg-transparent px-10 font-normal text-foreground hover:border-border hover:bg-transparent hover:text-foreground"
               onClick={handleScrollToSelector}
               style={{ fontSize: 'var(--font-size-body)', lineHeight: 'var(--line-height-body)', height: '56px' }}
               type="button"
+              variant="ghost"
             >
               {heroCta}
               <ArrowDown className="ml-2 size-4" />

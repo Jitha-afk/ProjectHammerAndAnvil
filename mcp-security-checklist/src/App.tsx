@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { AppSidebar } from '@/components/app-sidebar'
 import { CategoryView } from '@/components/layout/CategoryView'
-import { Footer } from '@/components/layout/Footer'
 import { Home } from '@/components/layout/Home'
 import { TopNav } from '@/components/layout/TopNav'
 import { AboutPage } from '@/components/pages/AboutPage'
@@ -95,15 +94,6 @@ function App() {
   )
 
   const selectedTotalItems = selectedItems.length
-
-  const latestSavedAt = useMemo(() => {
-    const timestamps = Object.values(itemStates)
-      .map((itemState) => itemState.updatedAt)
-      .filter((updatedAt): updatedAt is string => Boolean(updatedAt))
-      .sort((left, right) => right.localeCompare(left))
-
-    return timestamps[0] ?? null
-  }, [itemStates])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode)
@@ -318,8 +308,6 @@ function App() {
         />
 
         {renderContent()}
-
-        <Footer lastSavedAt={latestSavedAt} version={checklistData.version} />
         <Toast message={toastMessage} onDismiss={() => showToast(null)} />
       </div>
     </ErrorBoundary>

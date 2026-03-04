@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Github, Info, Share2, Shield } from 'lucide-react'
 
 import {
   Sidebar,
@@ -7,9 +8,12 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
 import { Toolbar } from "@/components/toolbar/Toolbar"
 import type { Section } from "@/types"
 
@@ -30,34 +34,90 @@ export function AppSidebar({
   ...props
 }: AppSidebarProps) {
   return (
-    <Sidebar variant="floating" {...props}>
+    <Sidebar collapsible="icon" variant="floating" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground" size="lg">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <Shield className="size-4" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">Checklist</span>
+                <span className="truncate text-xs text-sidebar-foreground/70">{sections.length} selected sections</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Sections</SidebarGroupLabel>
+          <SidebarGroupLabel>Selected Sections</SidebarGroupLabel>
           <SidebarGroupContent>
-            <div className="space-y-1">
+            <SidebarMenu>
               {sections.map((section) => (
-                <Button
-                  className="h-auto min-h-11 w-full justify-start text-left whitespace-normal"
-                  key={section.id}
+                <SidebarMenuItem key={section.id}>
+                  <SidebarMenuButton
+                    isActive={section.id === activeSectionId}
                     onClick={() => onNavigate(section.id)}
+                    tooltip={`${section.number}. ${section.title}`}
                     type="button"
-                    variant={section.id === activeSectionId ? 'secondary' : 'ghost'}
                   >
                     <span className="font-medium">{section.number}. {section.title}</span>
-                  </Button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
-            </div>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel>Filters</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <Toolbar
+              onResetRequested={onResetRequested}
+              searchInputRef={searchInputRef}
+              sections={sections}
+              showSectionActions={false}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
-        <Toolbar
-          onResetRequested={onResetRequested}
-          searchInputRef={searchInputRef}
-          sections={sections}
-        />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="About">
+              <a href="#/about">
+                <Info />
+                <span>About</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Share">
+              <a href="#/share">
+                <Share2 />
+                <span>Share</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Contribute">
+              <a
+                href="https://github.com/jitesh-a/mcp-security-checklist"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <Github />
+                <span>Contribute</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   )

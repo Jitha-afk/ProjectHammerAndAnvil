@@ -17,6 +17,7 @@ interface ToolbarProps {
   sections: Section[]
   searchInputRef: RefObject<HTMLInputElement | null>
   onResetRequested: () => void
+  showSectionActions?: boolean
 }
 
 const roleOptions: Array<{ value: Role | 'all'; label: string }> = [
@@ -34,7 +35,7 @@ const priorityOptions: Array<{ value: 'all' | 'CRITICAL' | 'HIGH+'; label: strin
   { value: 'HIGH+', label: 'HIGH+' },
 ]
 
-export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarProps) {
+export function Toolbar({ sections, searchInputRef, onResetRequested, showSectionActions = true }: ToolbarProps) {
   const priorityFilter = useChecklistStore((state) => state.priorityFilter)
   const roleFilter = useChecklistStore((state) => state.roleFilter)
   const searchQuery = useChecklistStore((state) => state.searchQuery)
@@ -116,32 +117,34 @@ export function Toolbar({ sections, searchInputRef, onResetRequested }: ToolbarP
         </DropdownMenu>
       </div>
 
-      <div className="grid gap-2">
-        <Button
-          className="min-h-11 w-full"
-          onClick={() => expandSections(sectionIds)}
-          type="button"
-          variant="outline"
-        >
-          Expand all
-        </Button>
-        <Button
-          className="min-h-11 w-full"
-          onClick={() => collapseSections(sectionIds)}
-          type="button"
-          variant="outline"
-        >
-          Collapse all
-        </Button>
-        <Button
-          className="min-h-11 w-full"
-          onClick={onResetRequested}
-          type="button"
-          variant="outline"
-        >
-          Reset
-        </Button>
-      </div>
+      {showSectionActions ? (
+        <div className="grid gap-2">
+          <Button
+            className="min-h-11 w-full"
+            onClick={() => expandSections(sectionIds)}
+            type="button"
+            variant="outline"
+          >
+            Expand all
+          </Button>
+          <Button
+            className="min-h-11 w-full"
+            onClick={() => collapseSections(sectionIds)}
+            type="button"
+            variant="outline"
+          >
+            Collapse all
+          </Button>
+          <Button
+            className="min-h-11 w-full"
+            onClick={onResetRequested}
+            type="button"
+            variant="outline"
+          >
+            Reset
+          </Button>
+        </div>
+      ) : null}
     </section>
   )
 }

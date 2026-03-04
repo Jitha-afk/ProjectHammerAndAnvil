@@ -43,11 +43,11 @@ export function AboutPage() {
 
           <ul className="list-disc space-y-2 pl-6">
             <li>OWASP Secure MCP Server Development Guide v1.0 (Feb 2026)</li>
-            <li>SlowMist MCP-Security-Checklist (2025)</li>
             <li>OWASP Cheat Sheet for Third-Party MCP Servers v1.0</li>
             <li>OWASP Top 10 for Agentic Applications 2026</li>
             <li>OWASP LLM AI Security & Governance Checklist v1.1</li>
             <li>OWASP AI Red Teaming Vendor Evaluation Guide v1.0</li>
+            <li>SlowMist MCP-Security-Checklist (2025)</li>
             <li>Recent academic research (arXiv 2506.01333, 2506.02040, 2512.06556, 2505.14590)</li>
           </ul>
 

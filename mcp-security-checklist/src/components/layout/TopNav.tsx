@@ -18,7 +18,6 @@ interface TopNavProps {
 
 export function TopNav({ isDarkMode, onToggleDarkMode, checklistContext }: TopNavProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isChecklistMenuOpen, setIsChecklistMenuOpen] = useState(false)
   const isChecklistMode = Boolean(checklistContext)
 
   return (
@@ -49,17 +48,6 @@ export function TopNav({ isDarkMode, onToggleDarkMode, checklistContext }: TopNa
             </span>
             <div className="ml-1 h-4 w-px bg-[var(--border)]" />
             <Button
-              aria-expanded={isChecklistMenuOpen}
-              aria-label="Toggle quick links"
-              className="h-9 w-9 rounded-sm"
-              onClick={() => setIsChecklistMenuOpen((previous) => !previous)}
-              size="icon"
-              type="button"
-              variant="ghost"
-            >
-              {isChecklistMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-            </Button>
-            <Button
               aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
               className="h-9 w-9 rounded-sm"
               onClick={onToggleDarkMode}
@@ -69,34 +57,6 @@ export function TopNav({ isDarkMode, onToggleDarkMode, checklistContext }: TopNa
             >
               {isDarkMode ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </Button>
-
-            {isChecklistMenuOpen && (
-              <div className="absolute right-0 top-11 z-50 w-40 rounded-sm border border-[var(--border)] bg-[var(--background)] p-1 shadow-sm">
-                <a
-                  className="block rounded-sm px-2 py-1.5 text-[var(--foreground)] transition-colors hover:bg-[var(--background-secondary)]"
-                  href="#/about"
-                  onClick={() => setIsChecklistMenuOpen(false)}
-                >
-                  About
-                </a>
-                <a
-                  className="block rounded-sm px-2 py-1.5 text-[var(--foreground)] transition-colors hover:bg-[var(--background-secondary)]"
-                  href="#/share"
-                  onClick={() => setIsChecklistMenuOpen(false)}
-                >
-                  Share
-                </a>
-                <a
-                  className="block rounded-sm px-2 py-1.5 text-[var(--foreground)] transition-colors hover:bg-[var(--background-secondary)]"
-                  href="https://github.com/jitesh-a/mcp-security-checklist"
-                  onClick={() => setIsChecklistMenuOpen(false)}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Contribute
-                </a>
-              </div>
-            )}
           </div>
         </div>
       ) : (
