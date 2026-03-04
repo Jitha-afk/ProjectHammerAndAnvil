@@ -1204,7 +1204,7 @@
             {
               "id": "srv-prompt-006",
               "title": "Tool Description Scanning",
-              "description": "Scan tool descriptions, parameters, and metadata for hidden instructions, invisible Unicode characters, or semantic manipulation attempts.",
+              "description": "Scan tool descriptions, parameters, and metadata for hidden instructions, invisible Unicode, and semantic manipulation. Combine regex/YARA-style signatures with semantic classifiers to detect exfiltration patterns and command-injection cues during onboarding and on every update.",
               "priority": "HIGH",
               "roles": [
                 "developer"

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "add-item",
+  "change": {
+    "sectionId": "mcp-server",
+    "subsectionId": "srv-tool",
+    "item": {
+      "id": "srv-tool-901",
+      "title": "Pattern and Semantic Scanning for Tool Metadata",
+      "description": "Scan tool descriptions and parameter metadata with regex or YARA-style signatures plus semantic classifiers to detect hidden instructions, exfiltration patterns, and command-injection cues before tool approval and at update time.",
+      "priority": "HIGH",
+      "roles": [
+        "security-engineer",
+        "developer"
+      ],
+      "tags": [
+        "tool-security",
+        "prompt-injection",
+        "supply-chain",
+        "priority-high"
+      ],
+      "sources": [
+        {
+          "label": "Enterprise-Grade Security for MCP (arXiv:2504.08623v2)",
+          "url": "https://arxiv.org/abs/2504.08623v2"
+        }
+      ]
+    }
+  }
+}
