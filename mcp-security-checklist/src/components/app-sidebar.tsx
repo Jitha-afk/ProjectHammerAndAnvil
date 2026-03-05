@@ -111,7 +111,7 @@ export function AppSidebar({
                     <Silk
                       speed={5}
                       scale={1}
-                      color="#7B7481"
+                      color="#00bef8"
                       noiseIntensity={1.5}
                       rotation={0}
                     />
