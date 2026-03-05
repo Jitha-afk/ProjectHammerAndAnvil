@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
